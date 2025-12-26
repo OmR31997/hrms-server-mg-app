@@ -13,7 +13,6 @@ export class UserController {
     async create_user(@Body() reqData: CreateUserDto): Promise<SuccessResponse> {
         return this.userService.create(reqData);
     }
-
     
     @Get("/read")
     async get_users(): Promise<SuccessResponse> {

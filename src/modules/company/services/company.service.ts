@@ -23,32 +23,32 @@ export class CompanyService {
         return success("Data fetched successfully.", companies);
     }
 
-    async readById(keyWal: Object): Promise<SuccessResponse> {
-        const company = await this.companyModel.findOne(keyWal).lean();
+    async readById(keyVal: Object): Promise<SuccessResponse> {
+        const company = await this.companyModel.findOne(keyVal).lean();
 
         if (!company) {
-            throw new NotFoundException(`Company not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`Company not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("Data fetched successfully.", company);
     }
 
-    async update(keyWal: Object, reqData: UpadateCompanyDto): Promise<SuccessResponse> {
+    async update(keyVal: Object, reqData: UpadateCompanyDto): Promise<SuccessResponse> {
         
-        const updated = await this.companyModel.findOneAndUpdate(keyWal, reqData, { new: true, runValidators: true });
+        const updated = await this.companyModel.findOneAndUpdate(keyVal, reqData, { new: true, runValidators: true });
 
         if (!updated) {
-            throw new NotFoundException(`Company not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`Company not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("Data fetched successfully.", updated);
     }
 
-    async delete(keyWal: Object): Promise<SuccessResponse> {
-        const deleted = await this.companyModel.findOneAndDelete(keyWal);
+    async delete(keyVal: Object): Promise<SuccessResponse> {
+        const deleted = await this.companyModel.findOneAndDelete(keyVal);
 
         if (!deleted) {
-            throw new NotFoundException(`Company not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`Company not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("Data fetched successfully.", deleted);

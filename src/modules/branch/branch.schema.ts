@@ -1,33 +1,33 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose, { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export type BranchDocument = Branch & Document;
 
 @Schema({ timestamps: true })
 export class Branch {
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true })
-    company_id: string;
+    @Prop({ type: Types.ObjectId, ref: "Company", required: [true, `'company_id' field must be required`] })
+    company_id: Types.ObjectId;
 
-    @Prop({ required: true })
+    @Prop({ required: [true, `'name' field must be required`] })
     name: string;
 
-    @Prop({ required: true })
+    @Prop({ required: [true, `'code' field must be required`] })
     code: string;
 
-    @Prop({ required: true })
+    @Prop({ required: [true, `'address' field must be required`] })
     address: string;
 
-    @Prop({ required: true })
-    lat: string;
+    @Prop({ required: [true, `'lat' field must be required`], min: -90, max: 90 })
+    lat: number;
 
-    @Prop({ required: true })
-    lng: string;
+    @Prop({ required: [true, `'lng' field must be required`], min: -180, max: 180 })
+    lng: number;
 
-    @Prop({ type:mongoose.Schema.Types.ObjectId, ref: "User", required: true })
-    manager_id: string;
+    @Prop({ type: Types.ObjectId, ref: "User", required: [true, `'manager_id' field must be required`] })
+    manager_id: Types.ObjectId;
 
-    @Prop({ required: true })
+    @Prop({ default: "pending", enum: ["approved", "pending", "rejected"] })
     status: string;
 
 }

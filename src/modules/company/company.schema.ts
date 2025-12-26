@@ -27,9 +27,11 @@ export class Company {
     @Prop({ required: [ true, `'visa_quota_total' field must be required`] })
     visa_quota_total: number;
 
-    @Prop({ default: "approved", enum:["approved", "rejected"] })
+    @Prop({ required: [ true, `'created_by' field must be required`] })
+    created_by: string;
+    
+    @Prop({default: "approved", enum: ["approved", "pending", "rejected"] })
     status: string;
-
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);

@@ -1,35 +1,37 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose, { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export type EmployeeDocument = Employee & Document;
 
-@Schema({timestamps: true})
+@Schema({timestamps: {createdAt: 'joining_date'}})
 export class Employee {
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true })
-    company_id: string;
+    @Prop({ type: Types.ObjectId, ref: "Company", required: [true, `'company_id' must be required`] })
+    company_id: Types.ObjectId;
 
-    @Prop({ required: true })
-    branch_id: string;
+    @Prop({ type: Types.ObjectId, required: [true, `'branch_id' must be required`] })
+    branch_id: Types.ObjectId;
 
-    @Prop({ required: true })
+    @Prop({ required: [true, `'employee_code' must be required`] })
     employee_code: string;
 
-    @Prop({ required: true })
+    @Prop({ required: [true, `'full_name' must be required`] })
     full_name: string;
 
-    @Prop({ required: true })
-    dob: Date;
+    @Prop({ required: [true, `'dob' must be required`] })
+    dob: string;
 
-    @Prop({ required: true })
+    @Prop({ required: [true, `'nationality' must be required`] })
     nationality: string;
 
-    @Prop({ required: true })
-    gender: Date;
+    @Prop({ required: [true, `'gender' must be required`], enum: ["male", "female", "unknown"] })
+    gender: string;
 
-    @Prop({ required: true })
+    @Prop({ type: Date, default: () => new Date() })
+    joining_date: Date;
+
+    @Prop({ required: [true, `'employment_status' must be required`], enum: ["approved", "pending", "rejected", "resigned", "terminated"] })
     employment_status: string;
-
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);
