@@ -26,15 +26,11 @@ export class RoleController {
 
     @Patch("/:roleId/update")
     async update_role(@Param("roleId") roleId: string, @Body() reqData: UpdateRoleDto): Promise<SuccessResponse> {
-        const keyVal = {
-            _id: roleId
-        }
-
-        return this.roleService.update(keyVal, reqData);
+        return this.roleService.update({_id: roleId}, reqData);
     }
 
     @Delete("/:roleId/delete")
-    async delete_role(@Param("roleId") roleId: string) {
+    async delete_role(@Param("roleId") roleId: string): Promise<SuccessResponse> {
         return this.roleService.delete({ _id: roleId });
     }
 }

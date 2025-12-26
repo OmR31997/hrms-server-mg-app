@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { success, SuccessResponse } from 'src/utils/respons.interface';
 import { UpdateRoleDto } from '../dto/update-role.dto';
+import { KeyValDto } from '../dto/key-val.dto';
 
 @Injectable()
 export class RoleService {
@@ -22,31 +23,31 @@ export class RoleService {
         return success("Data fetched successfully", roles);
     }
 
-    async readById(keyWal: Object): Promise<SuccessResponse> {
-        const role = await this.roleModel.findOne(keyWal).lean();
+    async readById(keyVal: KeyValDto): Promise<SuccessResponse> {
+        const role = await this.roleModel.findOne(keyVal).lean();
 
         if (!role) {
-            throw new NotFoundException(`Role not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`Role not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("Data fetched successfully", role);
     }
 
-    async update(keyWal: Object, reqData: UpdateRoleDto): Promise<SuccessResponse> {
-        const updated = await this.roleModel.findOneAndUpdate(keyWal, reqData, { new: true, runValidators: true });
+    async update(keyVal: KeyValDto, reqData: UpdateRoleDto): Promise<SuccessResponse> {
+        const updated = await this.roleModel.findOneAndUpdate(keyVal, reqData, { new: true, runValidators: true });
 
         if (!updated) {
-            throw new NotFoundException(`Role not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`Role not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("Role updated successfully", updated);
     }
 
-    async delete(keyWal: Object): Promise<SuccessResponse> {
-        const deleted = await this.roleModel.findOneAndDelete(keyWal);
+    async delete(keyVal: KeyValDto): Promise<SuccessResponse> {
+        const deleted = await this.roleModel.findOneAndDelete(keyVal);
 
         if (!deleted) {
-            throw new NotFoundException(`Role not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`Role not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("Role deleted successfully", deleted);

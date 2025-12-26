@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import basicAuth from "express-basic-auth";
 import { setupSwagger } from './config/swagger.config';
-import { AllExceptionsFilter } from './utils/helper';
+import { AllExceptionsFilter } from './utils/allExceptionsFilter';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {

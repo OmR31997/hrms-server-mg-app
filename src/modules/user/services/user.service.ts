@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from '../user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpadateUserDto } from '../dto/update-user.dto';
+import { KeyValDto } from '../dto/key-val.dto';
 
 @Injectable()
 export class UserService {
@@ -12,7 +13,7 @@ export class UserService {
 
     async create(reqData: CreateUserDto): Promise<SuccessResponse> {
         const created = await this.userModel.create(reqData);
-        return success("User created successfully.", created.toObject());
+        return success("User created successfully.", created);
     }
 
     async readAll(): Promise<SuccessResponse> {
@@ -21,31 +22,31 @@ export class UserService {
         return success("Data fetched successfully", users);
     }
 
-    async readById(keyWal: Object): Promise<SuccessResponse> {
-        const user = await this.userModel.findOne(keyWal).lean();
+    async readById(keyVal: KeyValDto): Promise<SuccessResponse> {
+        const user = await this.userModel.findOne(keyVal).lean();
 
         if(!user) {
-            throw new NotFoundException(`User not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`User not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("Data fetched successfully", user);
     }
 
-    async update(keyWal: Object, reqData: UpadateUserDto): Promise<SuccessResponse> {
-        const updated = await this.userModel.findOneAndUpdate(keyWal, reqData, {new: true, runValidators: true});
+    async update(keyVal: KeyValDto, reqData: UpadateUserDto): Promise<SuccessResponse> {
+        const updated = await this.userModel.findOneAndUpdate(keyVal, reqData, {new: true, runValidators: true});
         
         if(!updated) {
-            throw new NotFoundException(`User not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`User not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("User updated successfully", updated);
     }
 
-    async delete(keyWal: Object): Promise<SuccessResponse> {
-        const deleted = await this.userModel.findOneAndDelete(keyWal);
+    async delete(keyVal: KeyValDto): Promise<SuccessResponse> {
+        const deleted = await this.userModel.findOneAndDelete(keyVal);
 
         if(!deleted) {
-            throw new NotFoundException(`User not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`User not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("User deleted successfully", deleted);

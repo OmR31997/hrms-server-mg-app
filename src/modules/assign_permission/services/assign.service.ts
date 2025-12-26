@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { AssignPermission, AssignPermissionDocument } from '../assign_permission.schema';
 import { Model } from 'mongoose';
 import { CreateAssignPermissionDto } from '../dto/create-assign_permission.dto';
-import { success } from 'src/utils/respons.interface';
+import { success, SuccessResponse } from 'src/utils/respons.interface';
 import { UpadateAssignPermissionsDto } from '../dto/update-assign_permission.dto';
 import { KeyValDto } from '../dto/key-val.dto';
 
@@ -11,7 +11,7 @@ import { KeyValDto } from '../dto/key-val.dto';
 export class AssignService {
     constructor(@InjectModel(AssignPermission.name) private assignModel: Model<AssignPermissionDocument>) { }
 
-    async createOrUpdate(reqData: CreateAssignPermissionDto) {
+    async createOrUpdate(reqData: CreateAssignPermissionDto): Promise<SuccessResponse> {
         const { role_id, permission_ids } = reqData;
 
         const result = await this.assignModel.findOneAndUpdate(
@@ -27,7 +27,7 @@ export class AssignService {
         return success("Permission assigned successfully.", result);
     }
 
-    async add(keyVal: KeyValDto, reqData: UpadateAssignPermissionsDto) {
+    async add(keyVal: KeyValDto, reqData: UpadateAssignPermissionsDto): Promise<SuccessResponse> {
 
         const result = await this.assignModel.findOneAndUpdate(
             keyVal,
@@ -42,7 +42,7 @@ export class AssignService {
         return success("Permission assigned successfully.", result);
     }
 
-    async drop(keyVal: KeyValDto, reqData: UpadateAssignPermissionsDto) {
+    async drop(keyVal: KeyValDto, reqData: UpadateAssignPermissionsDto): Promise<SuccessResponse> {
         const result = await this.assignModel.findOneAndUpdate(
             keyVal,
             {
@@ -56,13 +56,13 @@ export class AssignService {
         return success("Permission dropped successfully.", result);
     }
 
-    async readAll() {
+    async readAll(): Promise<SuccessResponse> {
         const result = await this.assignModel.find().lean();
 
         return success("Data fetched successfully", result);
     }
 
-    async readById(keyVal: KeyValDto) {
+    async readById(keyVal: KeyValDto): Promise<SuccessResponse> {
         const result = await this.assignModel.findOne(keyVal).lean();
 
         if (!result) {
@@ -72,7 +72,7 @@ export class AssignService {
         return success("Data fetched successfully", result);
     }
 
-    async delete(keyVal: KeyValDto) {
+    async delete(keyVal: KeyValDto): Promise<SuccessResponse> {
         const deleted = await this.assignModel.findOneAndDelete(keyVal);
 
         if (!deleted) {

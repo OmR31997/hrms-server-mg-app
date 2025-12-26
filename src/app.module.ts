@@ -11,6 +11,8 @@ import { PermissionModule } from './modules/permission/permission.module';
 import { EmployeeModule } from './modules/employee/employee.module';
 import { AssignModule } from './modules/assign_permission/assign.module';
 import dbConfig from './config/db.config';
+import { HistoryModule } from './modules/employee_history/history.module';
+import { DocumentModule } from './modules/document/document.module';
 
 @Module({
   imports: [
@@ -25,7 +27,9 @@ import dbConfig from './config/db.config';
     UserModule,
     PermissionModule,
     EmployeeModule,
-    AssignModule
+    AssignModule,
+    HistoryModule,
+    DocumentModule
   ],
   controllers: [AppController],
   providers: [AppService],

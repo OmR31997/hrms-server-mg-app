@@ -13,6 +13,11 @@ export class CompanyController {
         return this.companyService.create(reqData);
     }
 
+    @Get("/read")
+    async get_companies(): Promise<SuccessResponse> {
+        return this.companyService.readAll();
+    }
+
     @Get("/:companyId/read")
     async get_company_detail(@Param("companyId") companyId: string): Promise<SuccessResponse> {
         return this.companyService.readById({ _id: companyId });
@@ -28,7 +33,7 @@ export class CompanyController {
     }
 
     @Delete("/:companyId/delete")
-    async delete_company(@Param("companyId") companyId: string) {
+    async delete_company(@Param("companyId") companyId: string): Promise<SuccessResponse> {
         return this.companyService.delete({ _id: companyId });
     }
 }

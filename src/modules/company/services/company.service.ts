@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { success, SuccessResponse } from 'src/utils/respons.interface';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpadateCompanyDto } from '../dto/update-company.dto';
+import { KeyValDto } from '../dto/key-val.dto';
 
 @Injectable()
 export class CompanyService {
@@ -23,7 +24,7 @@ export class CompanyService {
         return success("Data fetched successfully.", companies);
     }
 
-    async readById(keyVal: Object): Promise<SuccessResponse> {
+    async readById(keyVal: KeyValDto): Promise<SuccessResponse> {
         const company = await this.companyModel.findOne(keyVal).lean();
 
         if (!company) {
@@ -33,7 +34,7 @@ export class CompanyService {
         return success("Data fetched successfully.", company);
     }
 
-    async update(keyVal: Object, reqData: UpadateCompanyDto): Promise<SuccessResponse> {
+    async update(keyVal: KeyValDto, reqData: UpadateCompanyDto): Promise<SuccessResponse> {
         
         const updated = await this.companyModel.findOneAndUpdate(keyVal, reqData, { new: true, runValidators: true });
 
@@ -44,7 +45,7 @@ export class CompanyService {
         return success("Data fetched successfully.", updated);
     }
 
-    async delete(keyVal: Object): Promise<SuccessResponse> {
+    async delete(keyVal: KeyValDto): Promise<SuccessResponse> {
         const deleted = await this.companyModel.findOneAndDelete(keyVal);
 
         if (!deleted) {

@@ -25,15 +25,12 @@ export class PermissionController {
 
     @Patch("/:permissionId/update")
     async update_permission(@Param("permissionId") permissionId: string, @Body() reqData: UpdatePermissionDto): Promise<SuccessResponse> {
-        const keyVal = {
-            _id: permissionId
-        }
 
-        return this.permissionService.update(keyVal, reqData);
+        return this.permissionService.update({_id: permissionId}, reqData);
     }
 
     @Delete("/:permissionId/delete")
-    async delete_permission(@Param("permissionId") permissionId: string) {
+    async delete_permission(@Param("permissionId") permissionId: string): Promise<SuccessResponse> {
         return this.permissionService.delete({ _id: permissionId });
     }
 }

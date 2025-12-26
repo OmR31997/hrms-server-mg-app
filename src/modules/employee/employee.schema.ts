@@ -30,7 +30,7 @@ export class Employee {
     @Prop({ type: Date, default: () => new Date() })
     joining_date: Date;
 
-    @Prop({ required: [true, `'employment_status' must be required`], enum: ["approved", "pending", "rejected", "resigned", "terminated"] })
+    @Prop({ default: "pending", enum: ["approved", "pending", "rejected", "resigned", "terminated"] })
     employment_status: string;
 }
 

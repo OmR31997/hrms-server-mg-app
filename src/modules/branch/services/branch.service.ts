@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { CreateBranchDto } from '../dto/create-branch.dto';
 import { success, SuccessResponse } from 'src/utils/respons.interface';
 import { UpadateBranchDto } from '../dto/update-branch.dto';
+import { KeyValDto } from '../dto/key-val.dto';
 
 @Injectable()
 export class BranchService {
@@ -23,31 +24,31 @@ export class BranchService {
         return success("Data fetched successfully", branches);
     }
 
-    async readById(keyWal: Object): Promise<SuccessResponse> {
-        const branch = await this.branchModel.findOne(keyWal).lean();
+    async readById(keyVal: KeyValDto): Promise<SuccessResponse> {
+        const branch = await this.branchModel.findOne(keyVal).lean();
 
         if (!branch) {
-            throw new NotFoundException(`Branch not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`Branch not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("Data fetched successfully", branch);
     }
 
-    async update(keyWal: Object, reqData: UpadateBranchDto): Promise<SuccessResponse> {
-        const updated = await this.branchModel.findOneAndUpdate(keyWal, reqData, { new: true, runValidators: true });
+    async update(keyVal: KeyValDto, reqData: UpadateBranchDto): Promise<SuccessResponse> {
+        const updated = await this.branchModel.findOneAndUpdate(keyVal, reqData, { new: true, runValidators: true });
 
         if (!updated) {
-            throw new NotFoundException(`Branch not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`Branch not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("Branch updated successfully", updated);
     }
 
-    async delete(keyWal: Object): Promise<SuccessResponse> {
-        const deleted = await this.branchModel.findOneAndDelete(keyWal);
+    async delete(keyVal: KeyValDto): Promise<SuccessResponse> {
+        const deleted = await this.branchModel.findOneAndDelete(keyVal);
 
         if (!deleted) {
-            throw new NotFoundException(`Branch not found for ID: '${keyWal["_id"]}'`);
+            throw new NotFoundException(`Branch not found for ID: '${keyVal["_id"]}'`);
         }
 
         return success("Branch deleted successfully", deleted);

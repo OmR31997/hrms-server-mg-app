@@ -1,5 +1,6 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
+
 export type EmployeeHistoryDocument = EmployeeHistory & Document;
 
 @Schema({ timestamps: { createdAt: 'changed_at', updatedAt: false } })
@@ -20,3 +21,5 @@ export class EmployeeHistory {
     @Prop({ required: [true, `'changed_by' must be required`] })
     changed_by: string;
 }
+
+export const EmployeeHistorySchema = SchemaFactory.createForClass(EmployeeHistory);

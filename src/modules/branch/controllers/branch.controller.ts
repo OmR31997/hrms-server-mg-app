@@ -25,15 +25,11 @@ export class BranchController {
 
     @Patch("/:branchId/update")
     async update_branch(@Param("branchId") branchId: string, @Body() reqData: UpadateBranchDto): Promise<SuccessResponse> {
-        const keyVal = {
-            _id: branchId
-        }
-
-        return this.branchService.update(keyVal, reqData);
+        return this.branchService.update({_id: branchId}, reqData);
     }
 
     @Delete("/:branchId/delete")
-    async delete_branch(@Param("branchId") branchId: string) {
+    async delete_branch(@Param("branchId") branchId: string): Promise<SuccessResponse> {
         return this.branchService.delete({ _id: branchId });
     }
 }
