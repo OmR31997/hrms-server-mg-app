@@ -4,8 +4,8 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 export const setupSwagger = (app: INestApplication) => {
     const IS_PROD = process.env.NODE_ENV === "production";
 
-    const serverUrl = IS_PROD 
-    ? "https://hrms-server.onrender.com" : "http://localhost:3000";
+    const serverUrl = IS_PROD   
+    ? "https://hrms-server-mg-app.onrender.com" : "http://localhost:3000";
 
     const config = new DocumentBuilder()
         .setTitle("HRMS-Server API")
