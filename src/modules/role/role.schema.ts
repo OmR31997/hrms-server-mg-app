@@ -11,6 +11,12 @@ export class Role {
 
     @Prop({ required: [true, `'name' field must be required`], enum: ["manager", "employee", "user", "admin", "other"] })
     name: string;
+    
+    @Prop()
+    description:string;
+    
+    @Prop()
+    is_system:boolean
 }
 
 export const RoleSchema = SchemaFactory.createForClass(Role);

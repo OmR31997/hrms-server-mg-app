@@ -1,7 +1,7 @@
+import { corsConfig, setupSwagger } from './config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import basicAuth from "express-basic-auth";
-import { setupSwagger } from './config/swagger.config';
 import { AllExceptionsFilter } from './utils/allExceptionsFilter';
 import { ValidationPipe } from '@nestjs/common';
 
@@ -39,6 +39,8 @@ async function bootstrap() {
   }))
   
   app.useGlobalFilters(new AllExceptionsFilter());
+
+  app.enableCors(corsConfig)
   await app.listen(process.env.PORT || 3000);
 
   console.log(`Server running on port- ${process.env.BASE_URL}/api`);

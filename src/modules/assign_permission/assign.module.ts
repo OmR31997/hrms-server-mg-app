@@ -7,6 +7,7 @@ import { AssignPermission, AssignPermissionSchema } from './assign_permission.sc
 @Module({
     imports: [MongooseModule.forFeature([{ name: AssignPermission.name, schema: AssignPermissionSchema }])],
     providers: [AssignService],
-    controllers: [AssignController]
+    controllers: [AssignController],
+    exports: [AssignService]
 })
 export class AssignModule { }

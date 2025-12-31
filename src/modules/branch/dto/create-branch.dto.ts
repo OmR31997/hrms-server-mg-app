@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import { IsIn, IsMongoId, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
 
 export class CreateBranchDto {
@@ -33,8 +34,9 @@ export class CreateBranchDto {
 
     @ApiProperty({
         description: `The 'lat' of the branch`,
-        example: '28.613939',
+        example: 28.613939,
     })
+    @Type(() => Number)
     @IsNumber({}, { message: `'lat' must be a number` })
     @Min(-90, { message: `'lat' must be >= -90` })
     @Max(90, { message: `'lat' must be <= 90` })
@@ -44,6 +46,7 @@ export class CreateBranchDto {
         description: `The 'lng' of the branch`,
         example: 77.209021,
     })
+    @Type(() => Number)
     @IsNumber({}, { message: `'lng' must be a number` })
     @Min(-180, { message: `'lng' must be >= -180` })
     @Max(180, { message: `'lng' must be <= 180` })
@@ -63,5 +66,5 @@ export class CreateBranchDto {
     @IsOptional()
     @IsString({ message: `'status' must be string` })
     @IsIn(['approved', 'pending', 'rejected'], { message: `'status' must be a valid value` })
-    status: string;
+    status?: string;
 }

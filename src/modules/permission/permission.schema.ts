@@ -9,10 +9,10 @@ export class Permission {
     @Prop({ required: [true, `'resource' field must be required`] })
     resource: string;
 
-    @Prop({ unique: true, required: [true, `'action' field must be required`], enum: ["read", "create", "update", "delete"] })
+    @Prop({ required: [true, `'action' field must be required`], enum: ["read", "create", "update", "delete"] })
     action: string;
 
-    @Prop({ unique: true, required: [true, `'scope' field must be required`], enum: ["self", "global"] })
+    @Prop({ required: [true, `'scope' field must be required`], enum: ["self", "global"] })
     scope: string;
 }
 

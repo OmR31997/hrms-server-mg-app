@@ -1,37 +1,54 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from "@nestjs/config";
-import { DbModule } from './database/db/db.module';
-import { CompanyModule } from './modules/company/company.module';
-import { BranchModule } from './modules/branch/branch.module';
-import { RoleModule } from './modules/role/role.module';
-import { UserModule } from './modules/user/user.module';
-import { PermissionModule } from './modules/permission/permission.module';
-import { EmployeeModule } from './modules/employee/employee.module';
-import { AssignModule } from './modules/assign_permission/assign.module';
 import dbConfig from './config/db.config';
-import { HistoryModule } from './modules/employee_history/history.module';
-import { DocumentModule } from './modules/document/document.module';
+import { DbModule } from './database/db/db.module';
+import { jwtConfigFactory } from './config';
+import {
+  AdminModule, AssignModule, AuthModule, BranchModule, BranchTransferModule, CompanyModule, DocLogModule,
+  DocumentModule, EmployeeHistoryModule, EmployeeModule, OtpModule, PermissionModule, RoleModule,
+  UserModule, VisaHistoryModule, VisaModule, VisaQuotaLogModule
+} from './modules';
+
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
+import { Module } from '@nestjs/common';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [dbConfig]
+      load: [dbConfig, jwtConfigFactory]
     }),
     DbModule,
-    CompanyModule,
-    BranchModule,
-    RoleModule,
+    AuthModule,
+    CommonModule,
+
+    AdminModule,
     UserModule,
-    PermissionModule,
+
     EmployeeModule,
+    EmployeeHistoryModule,
+
+    RoleModule,
+    PermissionModule,
     AssignModule,
-    HistoryModule,
-    DocumentModule
+
+    VisaModule,
+    VisaHistoryModule,
+    VisaQuotaLogModule,
+
+    DocumentModule,
+    DocLogModule,
+
+    CompanyModule,
+    
+    BranchModule,
+    BranchTransferModule,
+
+    OtpModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -15,14 +15,15 @@ export const setupSwagger = (app: INestApplication) => {
             {
                 type: "http",
                 scheme: "bearer",
-                bearerFormat: "JWT"
+                bearerFormat: "JWT",
+                in: "header"
             },
-            "bearerAuth"
+            "access-token"
         )
         .addServer(`${serverUrl}`, IS_PROD ? "Production Server": "Local Server")
         .build();
 
-    const document = SwaggerModule.createDocument(app, config);
+    const document = SwaggerModule.createDocument(app, config, {deepScanRoutes: true});
 
     SwaggerModule.setup('swagger-ui', app, document, {
         swaggerOptions: {

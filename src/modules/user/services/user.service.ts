@@ -1,54 +1,61 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { success, SuccessResponse } from 'src/utils/respons.interface';
+import { success, SuccessResponse } from 'src/utils/response.interface';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpadateUserDto } from '../dto/update-user.dto';
 import { KeyValDto } from '../dto/key-val.dto';
+import { IUser } from '../interfaces/user.interface';
 
 @Injectable()
 export class UserService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { };
 
-    async create(reqData: CreateUserDto): Promise<SuccessResponse> {
+    async create(reqData: CreateUserDto): Promise<IUser> {
         const created = await this.userModel.create(reqData);
-        return success("User created successfully.", created);
+        return created;
     }
 
-    async readAll(): Promise<SuccessResponse> {
+    async readAll(): Promise<IUser[]> {
         const users = await this.userModel.find().lean();
 
-        return success("Data fetched successfully", users);
+        return users;
     }
 
-    async readById(keyVal: KeyValDto): Promise<SuccessResponse> {
-        const user = await this.userModel.findOne(keyVal).lean();
+    async readSingle(keyVal: KeyValDto, select: string | null = null): Promise<IUser> {
+        const query = this.userModel.findOne(keyVal);
 
-        if(!user) {
+        if (select) {
+            query.select(select);
+        }
+
+        const user = await query.lean();
+
+        if (!user) {
             throw new NotFoundException(`User not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("Data fetched successfully", user);
+        return user;
     }
 
-    async update(keyVal: KeyValDto, reqData: UpadateUserDto): Promise<SuccessResponse> {
-        const updated = await this.userModel.findOneAndUpdate(keyVal, reqData, {new: true, runValidators: true});
-        
-        if(!updated) {
+    async update(keyVal: KeyValDto, reqData: UpadateUserDto): Promise<IUser> {
+        const updated = await this.userModel.findOneAndUpdate(keyVal, reqData, { new: true, runValidators: true });
+
+        if (!updated) {
             throw new NotFoundException(`User not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("User updated successfully", updated);
+        return updated;
     }
 
-    async delete(keyVal: KeyValDto): Promise<SuccessResponse> {
+    async delete(keyVal: KeyValDto): Promise<IUser> {
         const deleted = await this.userModel.findOneAndDelete(keyVal);
 
-        if(!deleted) {
+        if (!deleted) {
             throw new NotFoundException(`User not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("User deleted successfully", deleted);
+        return deleted;
     }
 }

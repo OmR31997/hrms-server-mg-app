@@ -12,14 +12,14 @@ export class Employee {
     @Prop({ type: Types.ObjectId, required: [true, `'branch_id' must be required`] })
     branch_id: Types.ObjectId;
 
-    @Prop({ required: [true, `'employee_code' must be required`] })
+    @Prop({ unique: true, required: [true, `'employee_code' must be required`] })
     employee_code: string;
 
     @Prop({ required: [true, `'full_name' must be required`] })
     full_name: string;
 
     @Prop({ required: [true, `'dob' must be required`] })
-    dob: string;
+    dob: Date;
 
     @Prop({ required: [true, `'nationality' must be required`] })
     nationality: string;

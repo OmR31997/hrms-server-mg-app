@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsDateString, IsIn, IsNumber, IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsDateString, IsIn, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateCompanyDto {
 
@@ -51,6 +52,7 @@ export class CreateCompanyDto {
         example: '100',
     })
     @IsNumber({}, { message: `'visa_quota_total' must be number` })
+    @Type(() => Number)
     visa_quota_total: number;
 
     @ApiProperty({

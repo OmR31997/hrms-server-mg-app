@@ -2,12 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Employee, EmployeeDocument } from '../employee.schema';
 import { Connection, Model } from 'mongoose';
-import { success, SuccessResponse } from 'src/utils/respons.interface';
 import { KeyValDto } from '../dto/key-val.dto';
 import { CreateEmployeeDto } from '../dto/create-employee.dto';
 import { UpdateEmpoyeeDto } from '../dto/update-employee.dto';
 import { withTransaction } from 'src/utils/transaction.util';
-import { HistoryService } from 'src/modules/employee_history/services/history.service';
+import { EmployeeHistoryService } from 'src/modules/employee-history/services/employee-history.service';
+import { IEmployee } from '../interfaces/employee.interface';
 
 @Injectable()
 export class EmployeeService {
@@ -15,32 +15,34 @@ export class EmployeeService {
         @InjectModel(Employee.name)
         private employeeModel: Model<EmployeeDocument>,
         
-        @InjectConnection() private readonly connection: Connection,
-        private historyService: HistoryService,
+        @InjectConnection() 
+        private readonly connection: Connection,
+        
+        private historyService: EmployeeHistoryService,
     ) { }
 
-    async create(reqData: CreateEmployeeDto): Promise<SuccessResponse> {
+    async create(reqData: CreateEmployeeDto): Promise<IEmployee> {
         const created = await this.employeeModel.create(reqData);
-        return success("Emplyee created successfully", created);
+        return created;
     }
 
-    async readAll(): Promise<SuccessResponse> {
+    async readAll(): Promise<IEmployee[]> {
         const employees = await this.employeeModel.find().lean();
 
-        return success("Data fetched successfully.", employees);
+        return employees;
     }
 
-    async readById(keyVal: KeyValDto): Promise<SuccessResponse> {
+    async readById(keyVal: KeyValDto): Promise<IEmployee> {
         const employee = await this.employeeModel.findOne(keyVal).lean();
 
         if (!employee) {
             throw new NotFoundException(`Employee not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("Data fetched successfully.", employee);
+        return employee;
     }
 
-    async update(keyVal: KeyValDto, reqData: UpdateEmpoyeeDto, role: string): Promise<SuccessResponse> {
+    async update(keyVal: KeyValDto, reqData: UpdateEmpoyeeDto, role: string): Promise<IEmployee> {
 
         return withTransaction(this.connection, async (session) => {
             const employee = await this.employeeModel.findOne(keyVal).session(session);
@@ -69,17 +71,17 @@ export class EmployeeService {
             Object.assign(employee, reqData);
             await employee.save({ session });
 
-            return success("Employee updated successfully", employee);
+            return employee;
         })
     }
 
-    async delete(keyVal: KeyValDto): Promise<SuccessResponse> {
+    async delete(keyVal: KeyValDto): Promise<IEmployee> {
         const deleted = await this.employeeModel.findOneAndDelete(keyVal);
 
         if (!deleted) {
             throw new NotFoundException(`Employee not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("Employee deleted successfully.", deleted);
+        return deleted;
     }
 }

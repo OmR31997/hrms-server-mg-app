@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsDateString, IsIn, IsMongoId, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsIn, IsMongoId, IsOptional, IsString } from "class-validator";
 
 export class CreateEmployeeDto {
 

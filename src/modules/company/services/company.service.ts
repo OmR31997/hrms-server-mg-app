@@ -2,39 +2,36 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Company, CompanyDocument } from '../company.schema';
 import { Model } from 'mongoose';
-import { success, SuccessResponse } from 'src/utils/respons.interface';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpadateCompanyDto } from '../dto/update-company.dto';
 import { KeyValDto } from '../dto/key-val.dto';
+import { ICompany } from '../interfaces/company.interface';
 
 @Injectable()
 export class CompanyService {
     constructor(@InjectModel(Company.name) private companyModel: Model<CompanyDocument>) { };
 
-    async create(reqData: CreateCompanyDto): Promise<SuccessResponse> {
-
+    async create(reqData: CreateCompanyDto): Promise<ICompany> {
         const created = await this.companyModel.create(reqData);
-
-        return success("Company created successfully.", created);
+        return created;
     }
 
-    async readAll(): Promise<SuccessResponse> {
+    async readAll(): Promise<ICompany[]> {
         const companies = await this.companyModel.find().lean();
-
-        return success("Data fetched successfully.", companies);
+        return companies;
     }
 
-    async readById(keyVal: KeyValDto): Promise<SuccessResponse> {
+    async readOne(keyVal: KeyValDto): Promise<ICompany> {
         const company = await this.companyModel.findOne(keyVal).lean();
 
         if (!company) {
             throw new NotFoundException(`Company not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("Data fetched successfully.", company);
+        return company;
     }
 
-    async update(keyVal: KeyValDto, reqData: UpadateCompanyDto): Promise<SuccessResponse> {
+    async update(keyVal: KeyValDto, reqData: UpadateCompanyDto): Promise<ICompany> {
         
         const updated = await this.companyModel.findOneAndUpdate(keyVal, reqData, { new: true, runValidators: true });
 
@@ -42,16 +39,16 @@ export class CompanyService {
             throw new NotFoundException(`Company not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("Data fetched successfully.", updated);
+        return updated;
     }
 
-    async delete(keyVal: KeyValDto): Promise<SuccessResponse> {
+    async delete(keyVal: KeyValDto): Promise<ICompany> {
         const deleted = await this.companyModel.findOneAndDelete(keyVal);
 
         if (!deleted) {
             throw new NotFoundException(`Company not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("Data fetched successfully.", deleted);
+        return deleted;
     }
 }

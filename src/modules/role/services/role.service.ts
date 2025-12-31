@@ -3,53 +3,54 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Role, RoleDocument } from '../role.schema';
 import { Model } from 'mongoose';
 import { CreateRoleDto } from '../dto/create-role.dto';
-import { success, SuccessResponse } from 'src/utils/respons.interface';
+import { success, SuccessResponse } from 'src/utils/response.interface';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { KeyValDto } from '../dto/key-val.dto';
+import { IRole } from '../interfaces/role.interface';
 
 @Injectable()
 export class RoleService {
     constructor(@InjectModel(Role.name) private roleModel: Model<RoleDocument>) { }
 
-    async create(reqData: CreateRoleDto): Promise<SuccessResponse> {
+    async create(reqData: CreateRoleDto): Promise<IRole> {
         const created = await this.roleModel.create(reqData);
-
-        return success("Role created successfully.", created);
+        
+        return created;
     }
 
-    async readAll(): Promise<SuccessResponse> {
+    async readAll(): Promise<IRole[]> {
         const roles = await this.roleModel.find().lean();
 
-        return success("Data fetched successfully", roles);
+        return roles;
     }
 
-    async readById(keyVal: KeyValDto): Promise<SuccessResponse> {
+    async readById(keyVal: KeyValDto): Promise<IRole> {
         const role = await this.roleModel.findOne(keyVal).lean();
 
         if (!role) {
             throw new NotFoundException(`Role not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("Data fetched successfully", role);
+        return role;
     }
 
-    async update(keyVal: KeyValDto, reqData: UpdateRoleDto): Promise<SuccessResponse> {
+    async update(keyVal: KeyValDto, reqData: UpdateRoleDto): Promise<IRole> {
         const updated = await this.roleModel.findOneAndUpdate(keyVal, reqData, { new: true, runValidators: true });
 
         if (!updated) {
             throw new NotFoundException(`Role not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("Role updated successfully", updated);
+        return updated;
     }
 
-    async delete(keyVal: KeyValDto): Promise<SuccessResponse> {
+    async delete(keyVal: KeyValDto): Promise<IRole> {
         const deleted = await this.roleModel.findOneAndDelete(keyVal);
 
         if (!deleted) {
             throw new NotFoundException(`Role not found for ID: '${keyVal["_id"]}'`);
         }
 
-        return success("Role deleted successfully", deleted);
+        return deleted;
     }
 }
