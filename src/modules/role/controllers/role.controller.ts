@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { Access } from '@common/decorators';
+import { ISuccessResponse } from '@common/interfaces/payload.interface';
+import { success } from '@common/utils';
 import { RoleService } from '../services/role.service';
 import { CreateRoleDto } from '../dto/create-role.dto';
-import { success, SuccessResponse } from 'src/utils/response.interface';
 import { UpdateRoleDto } from '../dto/update-role.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
-import { Access } from 'src/common/decorators/access.decorator';
 import { IRole } from '../interfaces/role.interface';
 
 @ApiBearerAuth("access-token")
@@ -12,37 +13,37 @@ import { IRole } from '../interfaces/role.interface';
 export class RoleController {
     constructor(private readonly roleService: RoleService) { }
 
-    @Access({ resource: "role", action: "create" })
     @Post("/create")
-    async create_role(@Body() reqData: CreateRoleDto): Promise<SuccessResponse<IRole>> {
+    @Access({resource: "role", action:"create"})
+    async create_role(@Body() reqData: CreateRoleDto): Promise<ISuccessResponse<IRole>> {
         const result = await this.roleService.create(reqData);
         return success("Role created successfully.", result);
     }
 
-    @Access({ resource: "role", action: "read" })
     @Get("/read")
-    async get_roles(): Promise<SuccessResponse<IRole[]>> {
+    @Access({resource: "role", action:"read"})
+    async get_roles(): Promise<ISuccessResponse<IRole[]>> {
         const roles = await this.roleService.readAll();
         return success("Data fetched successfully", roles);
     }
 
-    @Access({ resource: "role", action: "read" })
     @Get("/:roleId/read")
-    async get_role(@Param("roleId") roleId: string): Promise<SuccessResponse<IRole>> {
+    @Access({resource: "role", action:"read"})
+    async get_role(@Param("roleId") roleId: string): Promise<ISuccessResponse<IRole>> {
         const role = await this.roleService.readById({ _id: roleId });
         return success("Data fetched successfully", role)
     }
 
-    @Access({ resource: "role", action: "update" })
     @Patch("/:roleId/update")
-    async update_role(@Param("roleId") roleId: string, @Body() reqData: UpdateRoleDto): Promise<SuccessResponse<IRole>> {
+    @Access({resource: "role", action:"update"})
+    async update_role(@Param("roleId") roleId: string, @Body() reqData: UpdateRoleDto): Promise<ISuccessResponse<IRole>> {
         const result = await this.roleService.update({ _id: roleId }, reqData);
         return success("Role updated successfully", result);
     }
 
-    @Access({ resource: "role", action: "delete" })
     @Delete("/:roleId/delete")
-    async delete_role(@Param("roleId") roleId: string): Promise<SuccessResponse<IRole>> {
+    @Access({resource: "role", action:"delete"})
+    async delete_role(@Param("roleId") roleId: string): Promise<ISuccessResponse<IRole>> {
         const result = await this.roleService.delete({ _id: roleId });
 
         return success("Role deleted successfully", result);

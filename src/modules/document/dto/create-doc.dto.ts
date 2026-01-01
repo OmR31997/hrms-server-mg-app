@@ -1,6 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsMongoId, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+
+export enum DocumentType {
+    PASSPORT = "passport",
+    VISA = "visa",
+    CONTRACT = "contract"
+}
 
 export class CreateDocDto {
     @ApiProperty({
@@ -8,20 +14,23 @@ export class CreateDocDto {
         example: 'ObjectId',
     })
     @IsMongoId({ message: `'employee_id' must contain valid Mongo IDs` })
+    @IsNotEmpty()
     employee_id: string;
 
     @ApiProperty({
         description: `Type of document`,
         example: 'ObjectId',
     })
-    @IsString({ message: `'doc_type' must be a string` })
-    doc_type: string;
+    @IsEnum(DocumentType)
+    @IsNotEmpty()
+    doc_type: DocumentType;
 
     @ApiProperty({
         description: `Stored file path or URL`,
         example: '/uploads/documents/passport.pdf',
     })
     @IsString({ message: `'file_path' must be a string` })
+    @IsNotEmpty()
     file_path: string;
 
     @ApiProperty({

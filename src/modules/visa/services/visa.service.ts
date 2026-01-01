@@ -2,14 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Visa, VisaDocument } from '../visa.schema';
 import { Connection, Model } from 'mongoose';
-import { success, SuccessResponse } from 'src/utils/response.interface';
 import { CreateVisaDto } from '../dto/create-visa.dto';
 import { KeyValDto } from '../dto/key-val.dto';
 import { UpdateVisaDto } from '../dto/update-visa.dto';
-import { withTransaction } from 'src/utils/transaction.util';
-import { VisaHistoryService } from 'src/modules/visa-history/services/visa-history.service';
 import { IVisa } from '../interfaces/visa.interface';
-import { JwtDto } from 'src/common/jwt.dto';
+import { VisaHistoryService } from '@module/visa-history/services/visa-history.service';
+import { withTransaction } from '@common/utils';
 
 @Injectable()
 export class VisaService {
@@ -43,7 +41,7 @@ export class VisaService {
         return visa;
     }
 
-    async update(keyVal: KeyValDto, reqData: UpdateVisaDto, authUser:JwtDto): Promise<IVisa> {
+    async update(keyVal: KeyValDto, reqData: UpdateVisaDto, authUser:any): Promise<IVisa> {
         return withTransaction(this.connection, async (session) => {
             const visa = await this.visaModel.findOne(keyVal);
 

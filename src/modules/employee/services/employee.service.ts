@@ -5,9 +5,9 @@ import { Connection, Model } from 'mongoose';
 import { KeyValDto } from '../dto/key-val.dto';
 import { CreateEmployeeDto } from '../dto/create-employee.dto';
 import { UpdateEmpoyeeDto } from '../dto/update-employee.dto';
-import { withTransaction } from 'src/utils/transaction.util';
-import { EmployeeHistoryService } from 'src/modules/employee-history/services/employee-history.service';
 import { IEmployee } from '../interfaces/employee.interface';
+import { EmployeeHistoryService } from '@module/employee-history/services/employee-history.service';
+import { withTransaction } from '@common/utils';
 
 @Injectable()
 export class EmployeeService {

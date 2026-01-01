@@ -1,6 +1,6 @@
 import { Model } from "mongoose";
-import { AdminDocument } from "src/modules/admin/admin.schema";
-import { RoleDocument } from "src/modules/role/role.schema";
+import { AdminDocument } from "@module/admin/admin.schema";
+import { RoleDocument } from "@module/role/role.schema";
 import * as bcrypt from "bcrypt";
 
 export class AdminSeeder {

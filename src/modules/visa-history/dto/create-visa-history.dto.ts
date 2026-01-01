@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsMongoId, IsNotEmpty} from "class-validator";
-import { Status } from "src/modules/visa/dto/create-visa.dto";
+import { Status } from "@module/visa/dto/create-visa.dto";
 
 export class CreateVisaHistoryDto {
 

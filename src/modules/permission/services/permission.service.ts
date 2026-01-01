@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Permission, PermissionDocument } from '../permission.schema';
 import { Model } from 'mongoose';
 import { CreatePermissionDto } from '../dto/create-permission.dto';
-import { success, SuccessResponse } from 'src/utils/response.interface';
 import { UpdatePermissionDto } from '../dto/update-permission.dto';
 import { KeyValDto } from '../dto/key-val.dto';
 import { IPermission } from '../interfaces/permission.interface';

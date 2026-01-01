@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Role, RoleDocument } from '../role.schema';
 import { Model } from 'mongoose';
 import { CreateRoleDto } from '../dto/create-role.dto';
-import { success, SuccessResponse } from 'src/utils/response.interface';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { KeyValDto } from '../dto/key-val.dto';
 import { IRole } from '../interfaces/role.interface';

@@ -16,8 +16,8 @@ export class VisaHistoryService {
     }
 
     async readAll(): Promise<IVisaHistory[]> {
-        const visas = await this.visaHistoryModel.find().lean();
-        return visas;
+        const visaHistories = await this.visaHistoryModel.find().lean();
+        return visaHistories;
     }
 
     async readSingle(keyVal: KeyValDto): Promise<IVisaHistory> {

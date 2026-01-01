@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { success, SuccessResponse } from 'src/utils/response.interface';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user.schema';
 import { InjectModel } from '@nestjs/mongoose';

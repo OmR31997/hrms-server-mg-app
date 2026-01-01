@@ -1,8 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Admin, AdminDocument } from '../admin.schema';
 import { Model } from 'mongoose';
-import { RoleService } from 'src/modules/role/services/role.service';
 import * as bcrypt from "bcrypt";
 import { KeyValDto } from '../dto/key-val.dto';
 import { IAdmin } from '../interfaces/admin.inteface';
@@ -14,8 +13,6 @@ export class AdminService {
     constructor(
         @InjectModel(Admin.name)
         private adminModel: Model<AdminDocument>,
-
-        private readonly roleService: RoleService
     ) { }
 
     async hashPassword(password: string): Promise<string> {

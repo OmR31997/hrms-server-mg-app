@@ -2,12 +2,10 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { ACCESS_KEY } from "../decorators/access.decorator";
-import {
-    AssignPermission, AssignPermissionDocument,
-    Permission, PermissionDocument,
-    Role, RoleDocument
-} from "../../modules"
+import { ACCESS_KEY } from "@common/decorators/access.decorator";
+import { Role, RoleDocument } from "@module/role/role.schema"
+import { Permission, PermissionDocument } from "@module/permission/permission.schema"
+import { AssignPermission, AssignPermissionDocument } from "@module/assign_permission/assign_permission.schema"
 
 @Injectable()
 export class AccessGuard implements CanActivate {

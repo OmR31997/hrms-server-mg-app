@@ -1,9 +1,11 @@
-import { corsConfig, setupSwagger } from './config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import basicAuth from "express-basic-auth";
-import { AllExceptionsFilter } from './utils/allExceptionsFilter';
+import { AllExceptionsFilter } from '@common/filters/all-exceptions.filter';
 import { ValidationPipe } from '@nestjs/common';
+import { corsConfig } from '@config/cors.config';
+import { setupSwagger } from '@config/swagger.config';
+import cookieParser from 'cookie-parser'; 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,6 +40,7 @@ async function bootstrap() {
     skipMissingProperties: false
   }))
   
+  app.use(cookieParser());
   app.useGlobalFilters(new AllExceptionsFilter());
 
   app.enableCors(corsConfig)
