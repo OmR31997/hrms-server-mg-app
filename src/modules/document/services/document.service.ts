@@ -7,7 +7,8 @@ import { Model } from 'mongoose';
 import { KeyValDto } from '../dto/keyVal.dto';
 import { UpdateDocDto } from '../dto/update-doc.dto';
 import { UploadedRequest } from '@common/types/payload.type';
-import { saveFileLocally } from '@common/utils/fileHelper.util';
+import { saveFileLocally, validateFiles } from '@common/utils/fileHelper.util';
+import { uploadFilesWithRollBack } from '@common/utils/upload.util';
 
 @Injectable()
 export class DocumentService {
@@ -16,10 +17,11 @@ export class DocumentService {
     ){}
     async create(reqData: CreateDocDto, file: UploadedRequest): Promise<IDocument> {
         
-        if(!file) {
-            throw new BadRequestException("File is required");
+        if(file) {
+            uploadFilesWithRollBack([file], "hrms/documents")
         }
 
+        
         const file_path = saveFileLocally(file);
         
         const created = await this.docModel.create(reqData);

@@ -65,7 +65,7 @@ export const validateFiles = async (
     }
 }
 
-export const saveFileLocally = async (file: UploadedRequest): Promise<string> => {
+export const saveFileLocally = async (file: Express.Multer.File): Promise<string> => {
 
     const uploadDir = path.join(process.cwd(), "uploads/documents");
 
