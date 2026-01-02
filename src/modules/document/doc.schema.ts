@@ -20,7 +20,7 @@ export class Doc {
     is_verified: boolean;
 
     @Prop({ default: null })
-    verified_by: string | null;
+    verified_by: string;
 }
 
 export const DocSchema = SchemaFactory.createForClass(Doc);
