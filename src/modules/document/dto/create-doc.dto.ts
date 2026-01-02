@@ -26,12 +26,12 @@ export class CreateDocDto {
     doc_type: DocumentType;
 
     @ApiProperty({
-        description: `Stored file path or URL`,
-        example: '/uploads/documents/passport.pdf',
+        type: 'string',
+        format: 'binary',
+        description: 'Upload the document file',
     })
-    @IsString({ message: `'file_path' must be a string` })
-    @IsNotEmpty()
-    file_path: string;
+    @IsOptional()
+    file: any;
 
     @ApiProperty({
         description: `Document version`,

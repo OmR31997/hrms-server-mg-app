@@ -7,9 +7,13 @@ export type JwtRequestPayload = {
     readonly company_id?: string | null
 }
 
+export type FilePayload = {
+  document: Express.Multer.File
+}
+
 export type UploadedFileResult = {
   secure_url: string;
   public_id: string | null;
-}
+} | null;
 
 export type UploadedRequest = Express.Multer.File;

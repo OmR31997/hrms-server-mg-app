@@ -6,25 +6,31 @@ import { Doc, DocDocument } from '../doc.schema';
 import { Model } from 'mongoose';
 import { KeyValDto } from '../dto/keyVal.dto';
 import { UpdateDocDto } from '../dto/update-doc.dto';
-import { UploadedRequest } from '@common/types/payload.type';
+import { FilePayload, UploadedFileResult, UploadedRequest } from '@common/types/payload.type';
 import { saveFileLocally, validateFiles } from '@common/utils/fileHelper.util';
 import { uploadFilesWithRollBack } from '@common/utils/upload.util';
 
 @Injectable()
 export class DocumentService {
     constructor(
-        @InjectModel(Doc.name) private docModel:Model<DocDocument>
-    ){}
-    async create(reqData: CreateDocDto, file: UploadedRequest): Promise<IDocument> {
-        
-        if(file) {
-            uploadFilesWithRollBack([file], "htms/documents")
+        @InjectModel(Doc.name) private docModel: Model<DocDocument>
+    ) { }
+    async create(reqData: CreateDocDto, reqFile: FilePayload): Promise<IDocument> {
+        const { document } = reqFile;
+
+        let uploadedPath: UploadedFileResult = null;
+
+        if (document) {
+            const result = await uploadFilesWithRollBack([document], "hrms/document");
+            uploadedPath = result?.[0] ?? null
+            delete reqData.file;
         }
 
-        
-        const file_path = saveFileLocally(file);
-        
-        const created = await this.docModel.create(reqData);
+        const created = await this.docModel.create({
+            ...reqData,
+            file_path: uploadedPath
+        });
+
         return created;
     }
 
@@ -43,9 +49,32 @@ export class DocumentService {
         return document;
     }
 
-    async update(keyVal: KeyValDto, reqData: UpdateDocDto): Promise<IDocument> {
+    async update(keyVal: KeyValDto, reqData: UpdateDocDto, reqFile: FilePayload): Promise<IDocument> {
 
-        const updated = await this.docModel.findOneAndUpdate(keyVal, reqData, { new: true, runValidators: true });
+        const { document } = reqFile;
+
+        let uploadedPath: UploadedFileResult = null;
+
+        if (document) {
+            const docDetail = await this.docModel.findOne(keyVal).select("file_path");
+
+            const result = await uploadFilesWithRollBack([document], "hrms/document");
+            uploadedPath = result?.[0] ?? null
+            delete reqData.file;
+
+            if(docDetail?.file_path) {
+                // delete logic
+            }
+        }
+
+        const updated = await this.docModel.findOneAndUpdate(
+            keyVal, 
+            {
+                ...reqData,
+                file_path: uploadedPath
+            }, 
+            { new: true, runValidators: true }
+        );
 
         if (!updated) {
             throw new NotFoundException(`Document not found for ID: '${keyVal["_id"]}'`);

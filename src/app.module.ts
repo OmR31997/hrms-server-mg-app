@@ -24,6 +24,9 @@ import { CompanyModule } from "@module/company/company.module";
 import { BranchModule } from "@module/branch/branch.module";
 import { BranchTransferModule } from "@module/branch-transfer/branch-transfer.module";
 import { OtpModule } from "@module/otp/otp.module";
+import { BankAccountModule } from './modules/bank-account/bank-account.module';
+import { BankAccountHistoryModule } from './modules/bank-account-history/bank-account-history.module';
+import { SalaryAdvanceModule } from './modules/salary-advance/salary-advance.module';
 
 @Module({
   imports: [
@@ -58,6 +61,12 @@ import { OtpModule } from "@module/otp/otp.module";
     BranchTransferModule,
 
     OtpModule,
+
+    BankAccountModule,
+
+    BankAccountHistoryModule,
+
+    SalaryAdvanceModule,
 
   ],
   controllers: [AppController],

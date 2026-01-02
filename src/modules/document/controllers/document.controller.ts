@@ -1,18 +1,26 @@
-import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { DocumentService } from '../services/document.service';
 import { CreateDocDto } from '../dto/create-doc.dto';
 import { success } from '@common/utils';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IDocument } from '../interfaces/document.interface';
 import { ISuccessResponse } from '@common/interfaces/payload.interface';
-import type { UploadedRequest } from '@common/types/payload.type';
 import { memoryStorage } from 'multer';
+import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { Access } from '@common/decorators';
 
+@ApiBearerAuth('access-token')
 @Controller('document')
 export class DocumentController {
     constructor(private docService: DocumentService) { }
 
     @Post("/create")
+    @Access({ resource: "document", action: "create" })
+    @ApiConsumes("multipart/form-data")
+    @ApiBody({
+        description: "Create a new document with file upload",
+        type: CreateDocDto,
+    })
     @UseInterceptors(
         FileInterceptor("file", {
             storage: memoryStorage()
@@ -22,7 +30,43 @@ export class DocumentController {
         @Body() reqData: CreateDocDto,
         @UploadedFile() file: Express.Multer.File
     ): Promise<ISuccessResponse<IDocument>> {
-        const result = await this.docService.create(reqData, file);
+
+        const filePayload = {
+            document: file
+        }
+
+        const result = await this.docService.create(reqData, filePayload);
         return success("Document created successfully", result);
+    }
+
+    @Get("/read")
+    async get_documents(): Promise<ISuccessResponse<IDocument[]>> {
+        const documents = await this.docService.readAll();
+        return success("Data fetched successfully", documents);
+    }
+
+    @Get("/:docId/read")
+    async get_document(@Param("docId") docId: string) {
+        const document = await this.docService.readOne({ _id: docId });
+    }
+
+    @Patch("/:docId")
+    async update_document(
+        @Param("docId") docId: string,
+        @Body() reqData: CreateDocDto,
+        @UploadedFile() file: Express.Multer.File
+    ): Promise<ISuccessResponse<IDocument>> {
+
+        const filePayload = {
+            document: file
+        }
+
+        const result = await this.docService.update(
+            {_id: docId},
+            reqData,
+            filePayload
+        )
+
+        return success("Document updated successfully", result);
     }
 }
