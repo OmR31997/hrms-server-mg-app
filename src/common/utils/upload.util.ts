@@ -12,6 +12,9 @@ export const uploadFilesWithRollBack = async (files: Express.Multer.File[], fold
         await validateFiles(
             files,
             [
+                "image/png",
+                "image/jpeg",
+                "image/jpg",
                 "application/pdf",
                 "application/msword",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"

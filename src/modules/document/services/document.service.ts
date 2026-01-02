@@ -18,7 +18,7 @@ export class DocumentService {
     async create(reqData: CreateDocDto, file: UploadedRequest): Promise<IDocument> {
         
         if(file) {
-            uploadFilesWithRollBack([file], "hrms/documents")
+            uploadFilesWithRollBack([file], "htms/documents")
         }
 
         
