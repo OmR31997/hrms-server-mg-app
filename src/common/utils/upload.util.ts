@@ -1,16 +1,17 @@
 import crypto from "crypto";
 import { ENV } from "@config/env.config";
-import { deleteLocalFile, validateFiles } from "./fileHelper.util";
+import { deleteLocalFile, validateFile } from "./fileHelper.util";
 import { toDeleteFromCloudStorage, toSaveCloudStorage } from "./cloudinary.util";
-import { UploadedFileResult } from "@common/types/payload.type";
 import { ForbiddenException } from "@nestjs/common";
+import { FilePath } from "@common/types/payload.type";
+import path from "path";
 
-export const uploadFilesWithRollBack = async (files: Express.Multer.File[], folder = "VHRMS/documents") => {
-    let uploadedFiles: UploadedFileResult[] = [];
+export const uploadFilesWithRollBack = async (file: Express.Multer.File, folder:string = "VHRMS/files") => {
+    let uploadedFile: FilePath = null;
 
     try {
-        await validateFiles(
-            files,
+        await validateFile(
+            file,
             [
                 "image/png",
                 "image/jpeg",
@@ -23,39 +24,39 @@ export const uploadFilesWithRollBack = async (files: Express.Multer.File[], fold
         );
 
         if (ENV.IS_PROD) {
-            uploadedFiles = await Promise.all(files.map((file) => toSaveCloudStorage(
+            console.log("File :" + file, "Folder: "+folder )
+            uploadedFile = await toSaveCloudStorage(
                 file,
                 folder,
                 `DOC-${crypto.randomBytes(64).toString("hex")}`
-            )));
+            );
         } else {
-            uploadedFiles = await Promise.all(files.map((file) => ({ secure_url: file.path, public_id: null })));
+            uploadedFile = { secure_url: path.resolve(file.path), public_id: null };
         }
 
-        return uploadedFiles;
+        return uploadedFile;
 
     } catch (error) {
-        if (uploadedFiles.length > 0) {
-            if (ENV.IS_PROD) {
-                await Promise.all(
-                    uploadedFiles
-                        .map(uploadedFile => uploadedFile?.public_id
-                            ? toDeleteFromCloudStorage(uploadedFile.public_id)
-                            : null
-                        )
-                )
+        if(uploadedFile) {
+            if(ENV.IS_PROD && uploadedFile.public_id) {
+                await toDeleteFromCloudStorage(uploadedFile.public_id)
+            } else if(uploadedFile.secure_url){
+                await deleteLocalFile(uploadedFile.secure_url)
             }
-
-            if(!ENV.IS_PROD) {
-                await Promise.all(
-                    files
-                    .filter((file) => file.path)
-                    .map((file) => deleteLocalFile(file.path))
-                )
-            }
-
-            throw new ForbiddenException("Failed to save file")
         }
+
+        throw new ForbiddenException("Failed to save file")
     }
 }
 
+export const deleteuploadedFiles = async (file_path: FilePath) => {
+    if(!file_path) return;
+
+    const {secure_url, public_id} = file_path;
+
+    if(ENV.IS_PROD && public_id) {
+       await toDeleteFromCloudStorage(public_id);   
+    } else if(secure_url) {
+        await deleteLocalFile(secure_url);
+    }
+}

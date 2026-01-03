@@ -27,11 +27,22 @@ import { OtpModule } from "@module/otp/otp.module";
 import { BankAccountModule } from './modules/bank-account/bank-account.module';
 import { BankAccountHistoryModule } from './modules/bank-account-history/bank-account-history.module';
 import { SalaryAdvanceModule } from './modules/salary-advance/salary-advance.module';
+import { SalaryLotModule } from './modules/salary-lot/salary-lot.module';
+import { SalaryModule } from './modules/salary/salary.module';
+import { SalaryHistoryModule } from './modules/salary-history/salary-history.module';
+import { SalaryLockModule } from './modules/salary-lock/salary-lock.module';
+import { SalaryPaymentModule } from './modules/salary-payment/salary-payment.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { AuditLogModule } from './modules/audit-log/audit-log.module';
+import { SystemJobModule } from './modules/system-job/system-job.module';
+import { AdvanceDeductionModule } from "@module/advance-deduction/advance-deduction.module";
+import { AdvanceHistoryModule } from "@module/advance-history/advance-history.module";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ".env",
       load: [dbConfig, jwtConfigFactory]
     }),
     DbModule,
@@ -67,6 +78,26 @@ import { SalaryAdvanceModule } from './modules/salary-advance/salary-advance.mod
     BankAccountHistoryModule,
 
     SalaryAdvanceModule,
+
+    AdvanceDeductionModule,
+
+    AdvanceHistoryModule,
+
+    SalaryLotModule,
+
+    SalaryModule,
+
+    SalaryHistoryModule,
+
+    SalaryLockModule,
+
+    SalaryPaymentModule,
+
+    NotificationModule,
+
+    AuditLogModule,
+
+    SystemJobModule,
 
   ],
   controllers: [AppController],

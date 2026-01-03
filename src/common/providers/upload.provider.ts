@@ -37,10 +37,10 @@ const createFileFilter = (allowedFieldName: string) => {
 export const multerConfig = (prefix = "", allowedFieldName = "document"): NestMulterOptions => {
     if (ENV.IS_PROD) {
         return {
-            storage: multer.memoryStorage(),
-            fileFilter: createFileFilter(allowedFieldName)
+            storage: multer.memoryStorage()
         }
     }
+    
 
     const storage = diskStorage({
         destination: (_req: Express.Request, _file: Express.Multer.File, callback) => {

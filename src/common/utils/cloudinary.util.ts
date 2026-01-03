@@ -1,8 +1,9 @@
-import { UploadedFileResult } from "@common/types/payload.type";
+import { FilePath } from "@common/types/payload.type";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiOptions } from "cloudinary";
 
-export const toSaveCloudStorage = async (file: Express.Multer.File, folder: string, fileName: string): Promise<UploadedFileResult> => {
+export const toSaveCloudStorage = async (file: Express.Multer.File, folder: string, fileName: string): Promise<FilePath> => {
+    
     if (!file) {
         throw new NotFoundException("File missing");
     }
@@ -11,13 +12,13 @@ export const toSaveCloudStorage = async (file: Express.Multer.File, folder: stri
         throw new ForbiddenException("File buffer missing");
     }
 
-    const options = {
+    const options: UploadApiOptions = {
         folder,
         public_id: fileName,
-        resourse_type: "auto"
+        resource_type: "auto"
     }
 
-    return new Promise<UploadedFileResult>((resolve, reject) => {
+    return new Promise<FilePath>((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
             options,
             (error, result) => {

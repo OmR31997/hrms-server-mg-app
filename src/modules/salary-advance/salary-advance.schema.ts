@@ -1,8 +1,9 @@
-import { Prop, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 
 export type SalaryAdvanceDocument = SalaryAdvance & Document;
 
+@Schema({timestamps: true})
 export class SalaryAdvance {
     @Prop({type: Types.ObjectId, ref: "Employee", required: [true, `'employee_id' must be required`]})
     employee_id: Types.ObjectId;
@@ -19,7 +20,7 @@ export class SalaryAdvance {
     @Prop({max: 2, required: [true, `'deduction_percentage' must be required`]})
     max_months: number;
 
-    @Prop({type: Types.ObjectId, ref: "User", required: [true, `'deduction_percentage' must be required`]})
+    @Prop({type: Types.ObjectId, ref: "role", required: [true, `'approved_by' must be required`]})
     approved_by: Types.ObjectId
 
     status:string;

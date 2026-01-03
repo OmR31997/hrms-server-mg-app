@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 import { DocumentType } from "./dto/create-doc.dto";
-import type { UploadedFileResult } from "@common/types/payload.type";
+import type { FilePath } from "@common/types/payload.type";
 
 export type DocDocument = Doc & Document;
 
@@ -15,7 +15,7 @@ export class Doc {
     doc_type: string;
 
     @Prop({type: Object, default: null})
-    file_path: UploadedFileResult
+    file_path: FilePath
 
     @Prop({ required: [true, `'version' must be required`] })
     version: number;

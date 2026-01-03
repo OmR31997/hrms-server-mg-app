@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { DocumentService } from '../services/document.service';
 import { CreateDocDto } from '../dto/create-doc.dto';
 import { success } from '@common/utils';
@@ -8,6 +8,7 @@ import { ISuccessResponse } from '@common/interfaces/payload.interface';
 import { memoryStorage } from 'multer';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Access } from '@common/decorators';
+import { multerConfig } from '@common/providers/upload.provider';
 
 @ApiBearerAuth('access-token')
 @Controller('document')
@@ -22,15 +23,14 @@ export class DocumentController {
         type: CreateDocDto,
     })
     @UseInterceptors(
-        FileInterceptor("file", {
-            storage: memoryStorage()
-        })
+        FileInterceptor("document", multerConfig("DOC_", "document"))
     )
     async create_document(
         @Body() reqData: CreateDocDto,
         @UploadedFile() file: Express.Multer.File
     ): Promise<ISuccessResponse<IDocument>> {
-
+        
+        console.log("Controller")
         const filePayload = {
             document: file
         }
@@ -51,6 +51,15 @@ export class DocumentController {
     }
 
     @Patch("/:docId")
+    @Access({ resource: "document", action: "update" })
+    @ApiConsumes("multipart/form-data")
+    @ApiBody({
+        description: "Create a new document with file upload",
+        type: CreateDocDto,
+    })
+    @UseInterceptors(
+        FileInterceptor("document", multerConfig("DOC_", "document"))
+    )
     async update_document(
         @Param("docId") docId: string,
         @Body() reqData: CreateDocDto,
@@ -67,6 +76,12 @@ export class DocumentController {
             filePayload
         )
 
+        return success("Document updated successfully", result);
+    }
+
+    @Delete("/:docId/delete")
+    async delete_doc(@Param("docId") docId:string) {
+        const result = await this.docService.delete({_id: docId});
         return success("Document updated successfully", result);
     }
 }

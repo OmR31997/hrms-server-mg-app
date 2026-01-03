@@ -6,9 +6,9 @@ import { Doc, DocDocument } from '../doc.schema';
 import { Model } from 'mongoose';
 import { KeyValDto } from '../dto/keyVal.dto';
 import { UpdateDocDto } from '../dto/update-doc.dto';
-import { FilePayload, UploadedFileResult, UploadedRequest } from '@common/types/payload.type';
-import { saveFileLocally, validateFiles } from '@common/utils/fileHelper.util';
-import { uploadFilesWithRollBack } from '@common/utils/upload.util';
+import { FilePath, FilePayload} from '@common/types/payload.type';
+import { } from '@common/utils/fileHelper.util';
+import { deleteuploadedFiles, uploadFilesWithRollBack } from '@common/utils/upload.util';
 
 @Injectable()
 export class DocumentService {
@@ -18,12 +18,11 @@ export class DocumentService {
     async create(reqData: CreateDocDto, reqFile: FilePayload): Promise<IDocument> {
         const { document } = reqFile;
 
-        let uploadedPath: UploadedFileResult = null;
+        let uploadedPath: FilePath = null;
 
         if (document) {
-            const result = await uploadFilesWithRollBack([document], "hrms/document");
-            uploadedPath = result?.[0] ?? null
-            delete reqData.file;
+            const result = await uploadFilesWithRollBack(document, "VHRMS/document");
+            uploadedPath = result ?? null;
         }
 
         const created = await this.docModel.create({
@@ -53,17 +52,16 @@ export class DocumentService {
 
         const { document } = reqFile;
 
-        let uploadedPath: UploadedFileResult = null;
+        let uploadedPath: FilePath = null;
 
         if (document) {
             const docDetail = await this.docModel.findOne(keyVal).select("file_path");
 
-            const result = await uploadFilesWithRollBack([document], "hrms/document");
-            uploadedPath = result?.[0] ?? null
-            delete reqData.file;
+            const result = await uploadFilesWithRollBack(document, "VHRMS/documents");
+            uploadedPath = result ?? null;
 
             if(docDetail?.file_path) {
-                // delete logic
+                await deleteuploadedFiles(docDetail.file_path)
             }
         }
 
@@ -89,6 +87,8 @@ export class DocumentService {
         if (!deleted) {
             throw new NotFoundException(`Document not found for ID: '${keyVal["_id"]}'`);
         }
+
+        await deleteuploadedFiles(deleted.file_path);
 
         return deleted;
     }

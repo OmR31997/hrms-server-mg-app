@@ -11,7 +11,7 @@ export type FilePayload = {
   document: Express.Multer.File
 }
 
-export type UploadedFileResult = {
+export type FilePath = {
   secure_url: string;
   public_id: string | null;
 } | null;

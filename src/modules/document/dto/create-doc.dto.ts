@@ -31,7 +31,7 @@ export class CreateDocDto {
         description: 'Upload the document file',
     })
     @IsOptional()
-    file: any;
+    document: any;
 
     @ApiProperty({
         description: `Document version`,

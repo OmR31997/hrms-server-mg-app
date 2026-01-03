@@ -10,53 +10,6 @@ import { IAssignPermission } from '../interfaces/assign_permission.interface';
 export class AssignService {
     constructor(@InjectModel(AssignPermission.name) private assignModel: Model<AssignPermissionDocument>) { }
 
-    /*
-    async createOrUpdate(reqData: CreateAssignPermissionDto): Promise<SuccessResponse> {
-        const { role_id, permission_id } = reqData;
-
-        const result = await this.assignModel.findOneAndUpdate(
-            { role_id },
-            {
-                $addToSet: {
-                    permission_ids: { $each: permission_ids }
-                }
-            },
-            { new: true, upsert: true }
-        );
-
-        return success("Permission assigned successfully.", result);
-    }
-
-    async add(keyVal: KeyValDto, reqData: UpadateAssignPermissionsDto): Promise<SuccessResponse> {
-
-        const result = await this.assignModel.findOneAndUpdate(
-            keyVal,
-            {
-                $addToSet: {
-                    permission_ids: { $each: reqData.permission_ids }
-                }
-            },
-            { new: true }
-        );
-
-        return success("Permission assigned successfully.", result);
-    }
-
-    async drop(keyVal: KeyValDto, reqData: UpadateAssignPermissionsDto): Promise<SuccessResponse> {
-        const result = await this.assignModel.findOneAndUpdate(
-            keyVal,
-            {
-                $pull: {
-                    permission_ids: { $in: reqData.permission_ids }
-                }
-            },
-            { new: true }
-        );
-
-        return success("Permission dropped successfully.", result);
-    }
-    */
-
     async create(reqData: CreateAssignPermissionDto):Promise<IAssignPermission> {
         
         const role_id = new Types.ObjectId(reqData.role_id);
