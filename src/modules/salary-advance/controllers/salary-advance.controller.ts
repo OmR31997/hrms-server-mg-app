@@ -17,7 +17,7 @@ export class SalaryAdvanceController {
     @Post("/create")
     @Access({ resource: "advance-salary", action: "create" })
     async create_advance_salary(@Request() user: JwtRequestPayload, @Body() reqData: CreateSalaryAdvanceDto): Promise<ISuccessResponse<ISalaryAdvance>> {
-        const result = await this.salaryAdvanceService.create(reqData, user.role_id);
+        const result = await this.salaryAdvanceService.create(reqData, user);
         return success("Advance salary has been done successfully", result);
     }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { CompanyService } from '../services/company.service';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpadateCompanyDto } from '../dto/update-company.dto';
@@ -15,14 +15,16 @@ export class CompanyController {
 
     @Post("/create")
     @Access({ resource: "company", action: "create" })
-    async create_company(@Body() reqData: CreateCompanyDto): Promise<ISuccessResponse<ICompany>> {
-        const result = await this.companyService.create(reqData);
+    async create_company(@Req() req:any, @Body() reqData: CreateCompanyDto): Promise<ISuccessResponse<ICompany>> {
+        const result = await this.companyService.create(reqData, req.user);
         return success("Company created successfully.", result);
     }
 
     @Get("/read")
     @Access({ resource: "company", action: "read" })
-    async get_companies(): Promise<ISuccessResponse<ICompany[]>> {
+    async get_companies(@Req() req:any): Promise<ISuccessResponse<ICompany[]>> {
+
+        const isUser = req.user.ref_by === "User";
         const result = await this.companyService.readAll();
         return success("Data fetched successfully.", result)
     }

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
 import { Status } from "./dto/create-visa.dto";
+import objectIdPlugin from "@common/utils/objectId.plugin";
 
 export type VisaDocument = Visa & Document;
 
@@ -32,4 +33,6 @@ export class Visa {
     status: Status;
 }
 
-export const VisaSchema = SchemaFactory.createForClass(Visa)
+export const VisaSchema = SchemaFactory.createForClass(Visa);
+
+VisaSchema.plugin(objectIdPlugin)

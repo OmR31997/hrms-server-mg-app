@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Visa, VisaDocument } from '../visa.schema';
-import { Connection, Model } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { CreateVisaDto } from '../dto/create-visa.dto';
 import { KeyValDto } from '../dto/key-val.dto';
 import { UpdateVisaDto } from '../dto/update-visa.dto';
 import { IVisa } from '../interfaces/visa.interface';
 import { VisaHistoryService } from '@module/visa-history/services/visa-history.service';
 import { withTransaction } from '@common/utils';
+import { JwtRequestPayload } from '@common/types/payload.type';
 
 @Injectable()
 export class VisaService {
@@ -20,8 +21,12 @@ export class VisaService {
         private readonly historyService: VisaHistoryService
     ) { }
 
-    async create(reqData: CreateVisaDto): Promise<IVisa> {
-        const created = await this.visaModel.create(reqData);
+    async create(reqData: CreateVisaDto, user: JwtRequestPayload): Promise<IVisa> {
+        const created = await this.visaModel.create({
+            ...reqData,
+            employee_id: new Types.ObjectId(reqData.employee_id),
+            assigned_manager_id: new Types.ObjectId(user.sub)
+        });
         return created;
     }
 
@@ -41,7 +46,7 @@ export class VisaService {
         return visa;
     }
 
-    async update(keyVal: KeyValDto, reqData: UpdateVisaDto, authUser:any): Promise<IVisa> {
+    async update(keyVal: KeyValDto, reqData: UpdateVisaDto, user:JwtRequestPayload): Promise<IVisa> {
         return withTransaction(this.connection, async (session) => {
             const visa = await this.visaModel.findOne(keyVal);
 
@@ -52,10 +57,10 @@ export class VisaService {
             if (reqData.status) {
                 await this.historyService.create(
                     {
-                        visa_id: visa._id.toString(),
+                        visa_id: new Types.ObjectId,
                         old_status: visa.status,
                         new_status: reqData.status,
-                        changed_by: authUser.id
+                        changed_by: new Types.ObjectId(user.role_id)
                     },
                     session
                 );

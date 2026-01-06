@@ -11,9 +11,6 @@ export class AdvanceHistory {
 
     @Prop({ enum: Object.values(Performer), required: [true, `'action' must be required`] })
     action: Performer;
-    
-    @Prop({ required: [true, `'remaining_balance' must be required`] })
-    remaining_balance: string;
 
     @Prop({ type:Types.ObjectId, ref:"Role", required: [true, `'performed_by' must be required`] })
     performed_by: Types.ObjectId;

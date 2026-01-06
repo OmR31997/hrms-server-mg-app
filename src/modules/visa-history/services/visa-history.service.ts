@@ -2,15 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { VisaHistory, VisaHistoryDocument } from '../visa_history.schema';
 import { ClientSession, Model } from 'mongoose';
-import { CreateVisaHistoryDto } from '../dto/create-visa-history.dto';
 import { KeyValDto } from '../dto/key-val.dto';
 import { IVisaHistory } from '../interfaces/visa-history.interface';
+import { CreateVisaHistory } from '../types/create-visa-history.dto';
 
 @Injectable()
 export class VisaHistoryService {
     constructor(@InjectModel(VisaHistory.name) private visaHistoryModel: Model<VisaHistoryDocument>) { }
 
-    async create(reqData: CreateVisaHistoryDto, session: ClientSession): Promise<IVisaHistory> {
+    async create(reqData: CreateVisaHistory, session: ClientSession): Promise<IVisaHistory> {
+        console.log("HISTORT")
         const [created] = await this.visaHistoryModel.create([reqData], { session });
         return created;
     }

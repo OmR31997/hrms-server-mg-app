@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export type CompanyDocument = Company & Document;
 
 @Schema({timestamps: true})
 export class Company {
 
-    @Prop({ required:[ true, `'legal_name' field must be required`] })
+    @Prop({ required:[ true, `'legal_name' field must be required`]})
     legal_name: string;
 
     @Prop({ required: [ true, `'trn' field must be required`] })
@@ -27,11 +27,13 @@ export class Company {
     @Prop({ required: [ true, `'visa_quota_total' field must be required`] })
     visa_quota_total: number;
 
-    @Prop({ required: [ true, `'created_by' field must be required`] })
-    created_by: string;
+    @Prop({ type: Types.ObjectId, ref: "Role", required: [ true, `'created_by' field must be required`] })
+    created_by: Types.ObjectId;
     
     @Prop({default: "approved", enum: ["approved", "pending", "rejected"] })
     status: string;
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
+
+CompanySchema.index({registration_no: 1}, {unique: true})

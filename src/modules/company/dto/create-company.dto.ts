@@ -12,13 +12,6 @@ export class CreateCompanyDto {
     legal_name: string;
 
     @ApiProperty({
-        description: `The 'trn' of the company`,
-        example: 'TXN00000545',
-    })
-    @IsString({ message: `'trn' must be string` })
-    trn: string;
-
-    @ApiProperty({
         description: `The 'registration_no' of the company`,
         example: '1323232423',
     })
@@ -57,10 +50,12 @@ export class CreateCompanyDto {
 
     @ApiProperty({
         description: `The 'created_by' of the company`,
-        example: 'Ajay Kumar',
+        example: 'ObjectId',
     })
     @IsString({ message: `'created_by' must be string` })
-    created_by: string;
+    @IsOptional()
+    created_by?: string;
+
 
     @ApiProperty({
         description: `The 'status' of the company`,

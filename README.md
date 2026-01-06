@@ -96,3 +96,10 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+# CRON 
+Auto Setup Visa Status
+Auto Setup Visa QuotaLog in ExpireTime
+
+1. Advance Deduction 
+

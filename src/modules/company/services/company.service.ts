@@ -1,18 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Company, CompanyDocument } from '../company.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpadateCompanyDto } from '../dto/update-company.dto';
 import { KeyValDto } from '../dto/key-val.dto';
 import { ICompany } from '../interfaces/company.interface';
+import { generateRefreshToken as generateTrn } from '@common/utils';
+import { JwtRequestPayload } from '@common/types/payload.type';
 
 @Injectable()
 export class CompanyService {
     constructor(@InjectModel(Company.name) private companyModel: Model<CompanyDocument>) { };
 
-    async create(reqData: CreateCompanyDto): Promise<ICompany> {
-        const created = await this.companyModel.create(reqData);
+    async create(reqData: CreateCompanyDto, user:JwtRequestPayload): Promise<ICompany> {
+        const trn = generateTrn();
+
+        const created = await this.companyModel.create({
+            ...reqData,
+            trn,
+            created_by: new Types.ObjectId(user.role_id)
+        });
         return created;
     }
 

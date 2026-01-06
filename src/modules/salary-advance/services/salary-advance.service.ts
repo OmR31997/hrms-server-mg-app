@@ -1,30 +1,48 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { SalaryAdvance, SalaryAdvanceDocument } from '../salary-advance.schema';
-import { Model, Types } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { CreateSalaryAdvanceDto } from '../dto/create-salary-advance.dto';
 import { ISalaryAdvance } from '../interfaces/salary-advance.interface';
 import { KeyValDto } from '../dto/key-val.dto';
 import { UpdateSalaryAdvanceDto } from '../dto/update-salary-advance.dto';
+import { withTransaction } from '@common/utils';
+import { AdvanceHistoryService } from '@module/advance-history/services/advance-history.service';
+import { Performer } from '@module/advance-history/types/advance-history.type';
+import { JwtRequestPayload } from '@common/types/payload.type';
 
 @Injectable()
 export class SalaryAdvanceService {
     constructor(
         @InjectModel(SalaryAdvance.name)
-        private salaryAdvanceModel: Model<SalaryAdvanceDocument>
+        private salaryAdvanceModel: Model<SalaryAdvanceDocument>,
+
+        @InjectConnection() 
+        private readonly connection: Connection,
+
+        private readonly advanceHistoryService: AdvanceHistoryService
     ) { }
 
-    async create(reqData: CreateSalaryAdvanceDto, approved_by: string): Promise<ISalaryAdvance> {
-        const created = await this.salaryAdvanceModel.create({
-            ...reqData,
-            approved_by: new Types.ObjectId(approved_by)
+    async create(reqData: CreateSalaryAdvanceDto, user:JwtRequestPayload): Promise<ISalaryAdvance> {
+        return withTransaction(this.connection, async (session) => {
+            const [createdDeduction] = await this.salaryAdvanceModel.create([{
+                ...reqData,
+                approved_by: new Types.ObjectId(user.role_id)
+            }], { session });
+
+            await this.advanceHistoryService.create({
+                advance_id: createdDeduction._id,
+                action: Performer.REQUEST,
+                performed_by: new Types.ObjectId(user.role_id)
+            }, session);
+
+            return createdDeduction;
         });
-        return created;
     }
 
     async readAll(): Promise<ISalaryAdvance[]> {
         const result = await this.salaryAdvanceModel.find()
-            .populate({ path: "approved_by"})
+            .populate({ path: "approved_by" })
             .lean();
 
         return result;

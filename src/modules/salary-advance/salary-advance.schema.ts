@@ -20,8 +20,8 @@ export class SalaryAdvance {
     @Prop({max: 2, required: [true, `'deduction_percentage' must be required`]})
     max_months: number;
 
-    @Prop({type: Types.ObjectId, ref: "User", required: [true, `'approved_by' must be required`]})
-    approved_by: Types.ObjectId
+    @Prop({type: Types.ObjectId, ref: "Role", required: [true, `'approved_by' must be required`]})
+    approved_by: Types.ObjectId;
 
     status:string;
 }

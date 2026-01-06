@@ -1,22 +1,40 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { AdvanceDeduction, AdvanceDeductionDocument } from '../advance-deduction.schema';
-import { Model, Types } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { CreateAdvanceDeduction } from '../types/create-advance-deduction.type';
 import { IAdvanceDeduction } from '../interface/advance-deduction.inteface';
 import { KeyValDto } from '../dto/keyVal.dto';
+import { withTransaction } from '@common/utils';
+import { AdvanceHistoryService } from '@module/advance-history/services/advance-history.service';
+import { Performer } from '@module/advance-history/types/advance-history.type';
+import { JwtRequestPayload } from '@common/types/payload.type';
 
 @Injectable()
 export class AdvanceDeductionService {
     constructor(
         @InjectModel(AdvanceDeduction.name)
-        private advanceDeductionModel: Model<AdvanceDeductionDocument>
+        private advanceDeductionModel: Model<AdvanceDeductionDocument>,
+
+        private advanceHistoryService: AdvanceHistoryService,
+
+        @InjectConnection()
+        private readonly connection: Connection,
     ) { }
 
-    async create(reqData: CreateAdvanceDeduction): Promise<IAdvanceDeduction> {
+    async create(reqData: CreateAdvanceDeduction, user:JwtRequestPayload): Promise<IAdvanceDeduction> {
 
-        const created = await this.advanceDeductionModel.create(reqData);
-        return created;
+        return withTransaction(this.connection, async (session) => {
+            const [createdDeduction] = await this.advanceDeductionModel.create([reqData], { session });
+
+            await this.advanceHistoryService.create({
+                advance_id: createdDeduction.advance_id,
+                action: Performer.DEDUCT,
+                performed_by: new Types.ObjectId(user.role_id)
+            }, session);
+
+            return createdDeduction;
+        });
     }
 
     async readAll(): Promise<IAdvanceDeduction[]> {

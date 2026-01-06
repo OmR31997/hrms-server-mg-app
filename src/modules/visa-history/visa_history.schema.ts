@@ -16,7 +16,7 @@ export class VisaHistory {
     @Prop({ enum: Object.values(Status), required: [true, `'new_status' must be reqired`] })
     new_status: Status;
 
-    @Prop({ type: Types.ObjectId, ref: "User", required: [true, `'changed_by' must be required`] })
+    @Prop({ type: Types.ObjectId, ref: "Role", required: [true, `'changed_by' must be required`] })
     changed_by: Types.ObjectId;
 }
 

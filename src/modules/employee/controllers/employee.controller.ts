@@ -15,34 +15,39 @@ export class EmployeeController {
     constructor(private readonly employeeService: EmployeeService) { }
 
     @Post("/create")
-    @Access({resource: "employee", action:"create"})
-    async create_employee(@Body() reqData: CreateEmployeeDto): Promise<ISuccessResponse<IEmployee>> {
-        const result = await this.employeeService.create(reqData);
+    @Access({ resource: "employee", action: "create" })
+    async create_employee(@Req() req: any, @Body() reqData: CreateEmployeeDto): Promise<ISuccessResponse<IEmployee>> {
+
+        const result = await this.employeeService.create({
+            ...reqData,
+            ...(req.user.ref_by === "User" ? { company_id: req.user.company_id } : { company_id: req.data })
+        });
+
         return success("Emplyee created successfully", result)
     }
 
     @Get("/read")
-    @Access({resource: "employee", action: "read"})
+    @Access({ resource: "employee", action: "read" })
     async get_employees(): Promise<ISuccessResponse<IEmployee[]>> {
         const employees = await this.employeeService.readAll();
         return success("Data fetched successfully.", employees);
     }
 
     @Get("/:empId/read")
-    @Access({resource: "employee", action: "read"})
+    @Access({ resource: "employee", action: "read" })
     async get_employee(@Param("empId") empId: string): Promise<ISuccessResponse<IEmployee>> {
         const employee = await this.employeeService.readById({ _id: empId });
         return success("Data fetched successfully.", employee);
     }
 
     @Patch("/:empId/update")
-    @Access({resource: "employee", action: "update"})
-    async update_employee(@Req() req:any, @Param("empId") empId: string, @Body() reqData: UpdateEmpoyeeDto): Promise<ISuccessResponse<IEmployee>> {
+    @Access({ resource: "employee", action: "update" })
+    async update_employee(@Req() req: any, @Param("empId") empId: string, @Body() reqData: UpdateEmpoyeeDto): Promise<ISuccessResponse<IEmployee>> {
 
         console.log("FROM CONTROLLER", req.user)
         const result = await this.employeeService.update(
             { _id: empId },
-            reqData, 
+            reqData,
             req.user
         );
 
@@ -50,7 +55,7 @@ export class EmployeeController {
     }
 
     @Delete("/:empId/delete")
-    @Access({resource: "employee", action: "delete"})
+    @Access({ resource: "employee", action: "delete" })
     async delete_employee(@Param("empId") empId: string): Promise<ISuccessResponse<IEmployee>> {
         const result = await this.employeeService.delete({ _id: empId });
 

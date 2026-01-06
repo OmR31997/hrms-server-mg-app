@@ -5,7 +5,8 @@ const origin = (
     callback: (err: Error | null, allow?: boolean) => void) => {
     const allowed = [
         process.env.PROD_CLIENT,
-        "http://localhost:3000",
+        process.env.DEV_CLIENT,
+        `http://localhost:${process.env.PORT}`,
     ].filter(Boolean);
 
     if (!requestOrigin || allowed.includes(requestOrigin)) {

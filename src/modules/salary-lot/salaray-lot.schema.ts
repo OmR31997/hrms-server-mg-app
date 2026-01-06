@@ -5,7 +5,7 @@ export type SalaryLotDocument = SalaryLot & Document;
 
 @Schema({ timestamps: true })
 export class SalaryLot {
-    @Prop({ required: [true, `'company_id' must be required`] })
+    @Prop({ type: Types.ObjectId, ref: "Company", required: [true, `'company_id' must be required`] })
     company_id: Types.ObjectId;
 
     @Prop({ required: [true, `'lot_size' must be required`], unique: true, lowercase: true, trim: true })

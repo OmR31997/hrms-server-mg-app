@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req} from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AdvanceDeductionService } from '../services/advance-deduction.service';
 import { Access } from '@common/decorators';
@@ -10,6 +10,13 @@ import { IAdvanceDeduction } from '../interface/advance-deduction.inteface';
 @Controller('advance-deduction')
 export class AdvanceDeductionController {
     constructor(private advanceDeductionService: AdvanceDeductionService) { }
+
+    @Post("/create") 
+    @Access({ resource: "advance-deduction", action: "create" })
+    async create_advance_deductions(@Req() req:any, @Body() reqData:any): Promise<ISuccessResponse<IAdvanceDeduction>> {
+        const result = await this.advanceDeductionService.create(reqData, req.user);
+        return success("Date fetched successfully", result);
+    }
 
     @Get("/read")
     @Access({ resource: "advance-deduction", action: "read" })

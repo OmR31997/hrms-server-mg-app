@@ -57,8 +57,8 @@ export class CreateVisaDto {
         example: 'ObjecrId',
     })
     @IsMongoId({message: `'assigned_manager_id' must contain valid Mongo IDs`})
-    @IsNotEmpty()
-    assigned_manager_id: string;
+    @IsOptional()
+    assigned_manager_id?: string;
 
     @ApiProperty({
         description: `The 'status' of the visa`,

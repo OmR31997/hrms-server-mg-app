@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Request } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ISuccessResponse } from '@common/interfaces/payload.interface';
 import { success } from '@common/utils';
@@ -15,12 +15,9 @@ export class VisaController {
 
     @Post("/create")
     @Access({resource: "visa", action:"create"})
-    async create_visa(@Body() reqData: CreateVisaDto, @Request() authUser: any): Promise<ISuccessResponse<IVisa>> {
+    async create_visa(@Req() req: any, @Body() reqData: CreateVisaDto, @Request() authUser: any): Promise<ISuccessResponse<IVisa>> {
         
-        const result = await this.visaService.create({
-            ...reqData,
-            assigned_manager_id: authUser.id || "system"
-        });
+        const result = await this.visaService.create(reqData, req.user);
 
         return success("Visa record created successfully", result);
     }
