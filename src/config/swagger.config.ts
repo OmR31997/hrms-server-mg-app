@@ -5,7 +5,7 @@ export const setupSwagger = (app: INestApplication) => {
     const IS_PROD = process.env.NODE_ENV === "production";
 
     const serverUrl = IS_PROD   
-    ? "https://hrms-server-mg-app.onrender.com" : `http://localhost:${process.env.PORT}`;
+    ? "https://hrms-server-mg-app.onrender.com" : `http://156.67.111.38:${process.env.PORT}`;
 
     const config = new DocumentBuilder()
         .setTitle("HRMS-Server API")
