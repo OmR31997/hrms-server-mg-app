@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Request } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Access } from '@common/decorators';
 import { success } from '@common/utils';
@@ -7,6 +7,7 @@ import { EmployeeService } from '../services/employee.service';
 import { CreateEmployeeDto } from '../dto/create-employee.dto';
 import { UpdateEmpoyeeDto } from '../dto/update-employee.dto';
 import { IEmployee } from '../interfaces/employee.interface';
+import type { JwtRequestPayload } from '@common/types/payload.type';
 
 @ApiBearerAuth('access-token')
 @Controller('employee')
@@ -36,11 +37,13 @@ export class EmployeeController {
 
     @Patch("/:empId/update")
     @Access({resource: "employee", action: "update"})
-    async update_employee(@Param("empId") empId: string, @Body() reqData: UpdateEmpoyeeDto): Promise<ISuccessResponse<IEmployee>> {
+    async update_employee(@Req() req:any, @Param("empId") empId: string, @Body() reqData: UpdateEmpoyeeDto): Promise<ISuccessResponse<IEmployee>> {
 
+        console.log("FROM CONTROLLER", req.user)
         const result = await this.employeeService.update(
             { _id: empId },
-            reqData, "user"
+            reqData, 
+            req.user
         );
 
         return success("Employee updated successfully", result);

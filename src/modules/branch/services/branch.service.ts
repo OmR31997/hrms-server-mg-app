@@ -1,18 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Branch, BranchDocument } from '../branch.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateBranchDto } from '../dto/create-branch.dto';
 import { UpadateBranchDto } from '../dto/update-branch.dto';
 import { KeyValDto } from '../dto/key-val.dto';
 import { IBranch } from '../interfaces/branch.interface';
+import { JwtRequestPayload } from '@common/types/payload.type';
 
 @Injectable()
 export class BranchService {
-    constructor(@InjectModel(Branch.name) private branchModel: Model<BranchDocument>) { }
+    constructor(
+        @InjectModel(Branch.name) 
+        private branchModel: Model<BranchDocument>,
+    ) { }
 
     async create(reqData: CreateBranchDto): Promise<IBranch> {
-        const created = await this.branchModel.create(reqData);
+        const created = await this.branchModel.create({
+            ...reqData,
+            company_id: new Types.ObjectId(reqData.company_id),
+            manager_id: new Types.ObjectId(reqData.manager_id)
+        });
         return created;
     }
 
@@ -31,7 +39,8 @@ export class BranchService {
         return branch;
     }
 
-    async update(keyVal: KeyValDto, reqData: UpadateBranchDto): Promise<IBranch> {
+    async update(keyVal: KeyValDto, reqData: UpadateBranchDto, user:JwtRequestPayload): Promise<IBranch> {
+
         const updated = await this.branchModel.findOneAndUpdate(keyVal, reqData, { new: true, runValidators: true });
 
         if (!updated) {

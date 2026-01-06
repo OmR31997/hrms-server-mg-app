@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { Access } from '@common/decorators';
+import { Access, Public } from '@common/decorators';
 import { ISuccessResponse } from '@common/interfaces/payload.interface';
 import { success } from '@common/utils';
 import { RoleService } from '../services/role.service';

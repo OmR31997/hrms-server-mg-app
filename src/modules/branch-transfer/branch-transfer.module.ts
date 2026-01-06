@@ -7,6 +7,7 @@ import { BranchTransfer, BranchTransferSchema } from './branch-transfer.schema';
 @Module({
   imports: [MongooseModule.forFeature([{ name: BranchTransfer.name, schema: BranchTransferSchema }])],
   providers: [BranchTransferService],
-  controllers: [BranchTransferController]
+  controllers: [BranchTransferController],
+  exports: [BranchTransferService]
 })
 export class BranchTransferModule { }

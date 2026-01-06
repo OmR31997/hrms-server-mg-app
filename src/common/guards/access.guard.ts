@@ -23,6 +23,7 @@ export class AccessGuard implements CanActivate {
     ) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
+        console.log("Controller hit");
         const req = context.switchToHttp().getRequest();
 
         const user = req.user;

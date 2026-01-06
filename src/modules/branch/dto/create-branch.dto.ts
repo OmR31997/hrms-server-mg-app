@@ -1,6 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsIn, IsMongoId, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
+import { IsEnum, IsIn, IsMongoId, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
+
+export enum Status {
+    APPROVED = "approved",
+    PENDING = "pending",
+    REJECTED = "rejected"
+}
 
 export class CreateBranchDto {
 
@@ -65,6 +71,6 @@ export class CreateBranchDto {
     })
     @IsOptional()
     @IsString({ message: `'status' must be string` })
-    @IsIn(['approved', 'pending', 'rejected'], { message: `'status' must be a valid value` })
-    status?: string;
+    @IsEnum(Status)
+    status?: Status;
 }

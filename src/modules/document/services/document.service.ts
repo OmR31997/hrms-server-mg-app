@@ -1,36 +1,51 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDocDto } from '../dto/create-doc.dto';
 import { IDocument } from '../interfaces/document.interface';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Doc, DocDocument } from '../doc.schema';
-import { Model } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { KeyValDto } from '../dto/keyVal.dto';
 import { UpdateDocDto } from '../dto/update-doc.dto';
-import { FilePath, FilePayload} from '@common/types/payload.type';
-import { } from '@common/utils/fileHelper.util';
-import { deleteuploadedFiles, uploadFilesWithRollBack } from '@common/utils/upload.util';
+import { FilePath, FilePayload, JwtRequestPayload } from '@common/types/payload.type';
+import { UploadService } from '@common/upload/upload.service';
+import { withTransaction } from '@common/utils';
+import { DocLogService } from '@module/doc-log/services/doc-log.service';
+import { Action } from '@module/doc-log/types/create-doc-log.type';
 
 @Injectable()
 export class DocumentService {
     constructor(
-        @InjectModel(Doc.name) private docModel: Model<DocDocument>
+        @InjectModel(Doc.name)
+        private docModel: Model<DocDocument>,
+        private uploadService: UploadService,
+
+        @InjectConnection()
+        private readonly connection: Connection,
+
+        private readonly docLogService: DocLogService,
     ) { }
+
     async create(reqData: CreateDocDto, reqFile: FilePayload): Promise<IDocument> {
         const { document } = reqFile;
 
-        let uploadedPath: FilePath = null;
+        let uploadedPath: FilePath | undefined = null;
 
         if (document) {
-            const result = await uploadFilesWithRollBack(document, "VHRMS/document");
-            uploadedPath = result ?? null;
+            uploadedPath = await this.uploadService.uploadWithRollback(document, "VHRMS/documents");
+
+            reqData.file_path = uploadedPath;
         }
 
-        const created = await this.docModel.create({
-            ...reqData,
-            file_path: uploadedPath
-        });
+        try {
+            const created = await this.docModel.create(reqData);
+            return created;
+        } catch (error) {
+            if (uploadedPath) {
+                await this.uploadService.deleteuploadedFiles(uploadedPath);
+            }
 
-        return created;
+            throw error;
+        }
     }
 
     async readAll(): Promise<IDocument[]> {
@@ -48,37 +63,56 @@ export class DocumentService {
         return document;
     }
 
-    async update(keyVal: KeyValDto, reqData: UpdateDocDto, reqFile: FilePayload): Promise<IDocument> {
+    async update(keyVal: KeyValDto, reqData: UpdateDocDto, reqFile: FilePayload, user: JwtRequestPayload): Promise<IDocument> {
 
         const { document } = reqFile;
 
-        let uploadedPath: FilePath = null;
+        let newFilePath: FilePath | undefined;
 
         if (document) {
-            const docDetail = await this.docModel.findOne(keyVal).select("file_path");
+            newFilePath = await this.uploadService.uploadWithRollback(document, "VHRMS/documents");
+            reqData.file_path = newFilePath;
+        }
 
-            const result = await uploadFilesWithRollBack(document, "VHRMS/documents");
-            uploadedPath = result ?? null;
+        try {
 
-            if(docDetail?.file_path) {
-                await deleteuploadedFiles(docDetail.file_path)
+            return withTransaction(this.connection, async (session) => {
+
+                const docDetail = await this.docModel.findOne(keyVal).session(session);
+
+                if (!docDetail) {
+                    throw new NotFoundException("Document not found");
+                }
+
+                const oldFilePath = docDetail.file_path;
+
+                await this.docLogService.create({
+                    document_id: docDetail._id,
+                    action: document ? Action.UPLOAD : Action.UPDATE,
+                    performed_by: new Types.ObjectId(user.role_id)
+                },
+                    session
+                );
+
+                const cleanReqData = Object.fromEntries(Object.entries(reqData).filter(([_, v]) => v !== undefined))
+
+                Object.assign(docDetail, cleanReqData);
+
+                await docDetail.save({ session });
+
+                if (document && oldFilePath) {
+                    await this.uploadService.deleteuploadedFiles(oldFilePath);
+                }
+
+                return docDetail;
+            });
+        } catch (error) {
+            if (newFilePath) {
+                await this.uploadService.deleteuploadedFiles(newFilePath);
             }
+
+            throw error;
         }
-
-        const updated = await this.docModel.findOneAndUpdate(
-            keyVal, 
-            {
-                ...reqData,
-                file_path: uploadedPath
-            }, 
-            { new: true, runValidators: true }
-        );
-
-        if (!updated) {
-            throw new NotFoundException(`Document not found for ID: '${keyVal["_id"]}'`);
-        }
-
-        return updated;
     }
 
     async delete(keyVal: KeyValDto): Promise<IDocument> {
@@ -88,7 +122,7 @@ export class DocumentService {
             throw new NotFoundException(`Document not found for ID: '${keyVal["_id"]}'`);
         }
 
-        await deleteuploadedFiles(deleted.file_path);
+        await this.uploadService.deleteuploadedFiles(deleted.file_path);
 
         return deleted;
     }

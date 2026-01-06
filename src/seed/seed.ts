@@ -9,11 +9,10 @@ import { AdminSeeder } from "./admin.seed";
 const bootstrap = async (): Promise<void> =>{
     const appContext = await NestFactory.createApplicationContext(AppModule);
 
+    const roleModel = appContext.get<Model<RoleDocument>>(getModelToken(Role.name));
     const adminModel = appContext.get<Model<AdminDocument>>(getModelToken(Admin.name));
 
-    const roleModel = appContext.get<Model<RoleDocument>>(getModelToken(Role.name));
-
-    const seeder = new AdminSeeder(adminModel, roleModel);
+    const seeder = new AdminSeeder(roleModel, adminModel);
     await seeder.run();
     await appContext.close();
 }

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
+import { Performer } from "./types/advance-history.type";
 
 export type AdvanceHistoryDocument = AdvanceHistory & Document;
 
@@ -8,14 +9,14 @@ export class AdvanceHistory {
     @Prop({ required: [true, `'advance_id' must be required`] })
     advance_id: Types.ObjectId;
 
-    @Prop({ required: [true, `'action' must be required`] })
-    action: string;
-
-    @Prop({ required: [true, `'performed_by' must be required`] })
-    performed_by: string;
-
+    @Prop({ enum: Object.values(Performer), required: [true, `'action' must be required`] })
+    action: Performer;
+    
     @Prop({ required: [true, `'remaining_balance' must be required`] })
     remaining_balance: string;
+
+    @Prop({ type:Types.ObjectId, ref:"Role", required: [true, `'performed_by' must be required`] })
+    performed_by: Types.ObjectId;
 }
 
 export const AdvanceHistorySchema = SchemaFactory.createForClass(AdvanceHistory);

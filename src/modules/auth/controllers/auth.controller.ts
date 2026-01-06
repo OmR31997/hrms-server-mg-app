@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../dto/login.dto';
 import { Public } from '@common/decorators';
 import type { Request, Response } from 'express';
-import type { JwtRequestPayload  } from "@common/types/payload.type"
+import type { JwtRequestPayload } from "@common/types/payload.type"
 import { ISuccessResponse } from '@common/interfaces/payload.interface';
 import { success } from '@common/utils';
 import { IToken } from '../interfaces/auth.interface';
@@ -31,7 +31,15 @@ export class AuthController {
             maxAge: 1000 * 60 * 60 * 24 * 7
         });
 
-        return { access_token,  refresh_token};
+        return { access_token, refresh_token };
+    }
+
+    @Post("/:email/otp")
+    @Public()
+    async sendOtp(@Param("email") email: string):Promise<ISuccessResponse> {
+        const otp = await this.authService.sendOtp(email);
+        console.log(`OTP: ${otp}`);
+        return success("OTP sent successfully")
     }
 
     @Get("/refresh")
@@ -60,7 +68,7 @@ export class AuthController {
 
     @Post("/logout-all")
     async logout_all(@Req() user: JwtRequestPayload, @Res() res: Response): Promise<ISuccessResponse> {
-        const { sub: owner_id, ref_by} = user;
+        const { sub: owner_id, ref_by } = user;
         await this.authService.logoutAllFromAllDevices(owner_id, ref_by)
         res.clearCookie("refreshToken", { path: "/auth/refresh" });
 

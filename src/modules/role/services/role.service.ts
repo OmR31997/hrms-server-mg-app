@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Role, RoleDocument } from '../role.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { KeyValDto } from '../dto/key-val.dto';
@@ -12,7 +12,10 @@ export class RoleService {
     constructor(@InjectModel(Role.name) private roleModel: Model<RoleDocument>) { }
 
     async create(reqData: CreateRoleDto): Promise<IRole> {
-        const created = await this.roleModel.create(reqData);
+        const created = await this.roleModel.create({
+            ...reqData,
+            company_id: new Types.ObjectId(reqData.company_id),
+        });
         
         return created;
     }

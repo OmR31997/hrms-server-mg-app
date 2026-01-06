@@ -18,8 +18,8 @@ export class EmployeeHistory {
     @Prop({ required: [true, `'new_value' must be required`] })
     new_value: string;
 
-    @Prop({ required: [true, `'changed_by' must be required`] })
-    changed_by: string;
+    @Prop({ type: Types.ObjectId, ref: "Role", required: [true, `'changed_by' must be required`] })
+    changed_by: Types.ObjectId;
 }
 
 export const EmployeeHistorySchema = SchemaFactory.createForClass(EmployeeHistory);

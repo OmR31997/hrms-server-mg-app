@@ -1,6 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDateString, IsIn, IsMongoId, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsEnum, IsIn, IsMongoId, IsOptional, IsString } from "class-validator";
 
+export enum Status {
+    APPROVED = "approved",
+    PENDING = "pending",
+    REJECTED = "rejected",
+    TERMINATED = "terminated",
+    RESIGNED = "resigned"
+
+}
 export class CreateEmployeeDto {
 
     @ApiProperty({
@@ -67,6 +75,6 @@ export class CreateEmployeeDto {
     })
     @IsOptional()
     @IsString({ message: `'employment_status' must be string` })
-    @IsIn(['approved', 'pending', 'rejected', 'resigned', 'terminated'], { message: `'employment_status' must be valid value` })
-    employment_status: string;
+    @IsEnum(Status, { message: `'employment_status' must be valid value` })
+    employment_status: Status;
 }

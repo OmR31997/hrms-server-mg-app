@@ -16,17 +16,17 @@ export class BranchTransfer {
     @Prop({ required: [true, `'to_branch_id' field must be required`] })
     to_branch_id: Types.ObjectId;
     
-    @Prop({ required: [true, `'equested_by' field must be required`] })
+    @Prop({ type: Types.ObjectId, ref: "User", required: [true, `'equested_by' field must be required`] })
     requested_by: Types.ObjectId;
     
-    @Prop({ required: [true, `'approved_by' field must be required`] })
+    @Prop({ type: Types.ObjectId, ref: "Role", required: [true, `'approved_by' field must be required`] })
     approved_by: Types.ObjectId;
     
     @Prop()
     effective_date: Date;
     
-    @Prop({ default: "under_process", enum: Object.values(Status) })
-    status: string;
+    @Prop({ enum: Object.values(Status), default: Status.UNDER_PROCESS, })
+    status?: Status;
 }
 
 export const BranchTransferSchema = SchemaFactory.createForClass(BranchTransfer);

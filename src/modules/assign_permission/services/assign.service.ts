@@ -12,10 +12,11 @@ export class AssignService {
 
     async create(reqData: CreateAssignPermissionDto):Promise<IAssignPermission> {
         
-        const role_id = new Types.ObjectId(reqData.role_id);
-        const permission_id = new Types.ObjectId(reqData.permission_id);
-        
-        const created = await this.assignModel.create({role_id, permission_id});
+        const created = await this.assignModel.create({
+            ...reqData,
+            role_id: new Types.ObjectId(reqData.role_id),
+            permission_id: new Types.ObjectId(reqData.permission_id)
+        });
 
         return created;
     }

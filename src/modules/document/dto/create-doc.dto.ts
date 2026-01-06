@@ -1,3 +1,4 @@
+import type { FilePath } from "@common/types/payload.type";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
@@ -19,20 +20,12 @@ export class CreateDocDto {
 
     @ApiProperty({
         description: `Type of document`,
-        example: 'ObjectId',
+        example: 'passport | aadhar',
     })
     @IsEnum(DocumentType)
     @IsNotEmpty()
     doc_type: DocumentType;
-
-    @ApiProperty({
-        type: 'string',
-        format: 'binary',
-        description: 'Upload the document file',
-    })
-    @IsOptional()
-    document: any;
-
+    
     @ApiProperty({
         description: `Document version`,
         example: 1,
@@ -41,4 +34,7 @@ export class CreateDocDto {
     @Type(() => Number)
     @IsNumber({}, { message: `'version' must be a number` })
     version?: number;
+
+    @IsOptional()
+    file_path?:FilePath;
 }

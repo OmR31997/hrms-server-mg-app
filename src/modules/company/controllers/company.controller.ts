@@ -4,7 +4,7 @@ import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpadateCompanyDto } from '../dto/update-company.dto';
 import { ICompany } from '../interfaces/company.interface';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { Access } from '@common/decorators';
+import { Access, Public } from '@common/decorators';
 import { ISuccessResponse } from '@common/interfaces/payload.interface';
 import { success } from '@common/utils';
 

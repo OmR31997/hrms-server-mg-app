@@ -1,3 +1,4 @@
+import objectIdPlugin from "@common/utils/objectId.plugin";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
 
@@ -20,6 +21,8 @@ export class Role {
 }
 
 export const RoleSchema = SchemaFactory.createForClass(Role);
+
+RoleSchema.plugin(objectIdPlugin);
 
 // Ensure role name is unique per company
 RoleSchema.index({ company_id: 1, name: 1 }, { unique: true });

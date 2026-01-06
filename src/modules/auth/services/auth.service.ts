@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import * as bcrypt from "bcrypt";
 import { LoginDto } from '../dto/login.dto';
@@ -10,6 +10,7 @@ import { Model, Types } from 'mongoose';
 import { RefreshToken, RefreshTokenDocument } from '@common/schemas/refresh-tokens.schema';
 import { addDays, cryptoHash, generateRefreshToken } from '@common/utils/crypto.util';
 import { JwtRequestPayload } from '@common/types/payload.type';
+import { OtpService } from '@common/otp/otp.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
         private refreshModel: Model<RefreshTokenDocument>,
         private readonly adminService: AdminService,
         private readonly userService: UserService,
+        private readonly otpService: OtpService,
         private jwtService: JwtService
     ) { }
 
@@ -41,7 +43,13 @@ export class AuthService {
     private async validatedUser(reqData: LoginDto): Promise<IValidatedUser> {
         const { email, password, otp } = reqData;
 
-        if (email.split("@")[0].endsWith("admin") && password) {
+        let isValid = false;
+
+        if (email.split("@")[0].endsWith("admin")) {
+
+            if (!password) {
+                throw new BadRequestException(`'otp' field must be required`)
+            }
 
             const admin = await this.adminService.readSingle({ email }, "+password role_id");
 
@@ -49,18 +57,16 @@ export class AuthService {
                 throw new NotFoundException(`User not found for email: '${email}'`);
             }
 
-            const passwordMatches = await bcrypt.compare(password, admin.password);
+            isValid = await bcrypt.compare(password, admin.password);
 
-            if (!passwordMatches) {
-                throw new UnauthorizedException("Invalid credentials");
+            if (isValid) {
+                return { _id: admin._id, role_id: admin.role_id, ref_by: "Admin" };
             }
-
-            return { _id: admin._id, role_id: admin.role_id, ref_by: "Admin" };
 
         } else {
 
-            if (otp) {
-                //OTP Logic
+            if (!otp) {
+                throw new BadRequestException(`'otp' field must be required`)
             }
 
             const user = await this.userService.readSingle({ email }, "role_id");
@@ -69,8 +75,14 @@ export class AuthService {
                 throw new NotFoundException(`User not found for email: '${email}'`);
             }
 
-            return { _id: user._id, role_id: user.role_id, ref_by: "User" };
+            isValid = await this.otpService.verifyOtp(user._id.toString(), otp);
+
+            if (isValid) {
+                return { _id: user._id, role_id: user.role_id, ref_by: "User" };
+            }
         }
+
+        throw new UnauthorizedException("Invalid credentials")
     }
 
     async login(reqData: LoginDto): Promise<IToken> {
@@ -90,6 +102,11 @@ export class AuthService {
         const tokens = await this.signToken(payload);
 
         return tokens;
+    }
+
+    async sendOtp(email: string): Promise<string> {
+        const user = await this.userService.readSingle({ email }, "_id");
+        return this.otpService.generateOtp(user._id);
     }
 
     async refreshAccessToken(refreshToken: string): Promise<IToken> {
@@ -127,6 +144,6 @@ export class AuthService {
     }
 
     async logoutAllFromAllDevices(ownerId: string, ref_by: "User" | "Admin") {
-        await this.refreshModel.updateMany({ owner_id:ownerId, ref_by }, {revoked_at: new Date()})
+        await this.refreshModel.updateMany({ owner_id: ownerId, ref_by }, { revoked_at: new Date() })
     }
 }

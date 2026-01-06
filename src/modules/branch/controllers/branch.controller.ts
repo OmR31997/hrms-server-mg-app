@@ -1,19 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { BranchService } from '../services/branch.service';
 import { CreateBranchDto } from '../dto/create-branch.dto';
 import { UpadateBranchDto } from '../dto/update-branch.dto';
 import { IBranch } from '../interfaces/branch.interface';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { Access, Public } from '@common/decorators';
+import { Access } from '@common/decorators';
 import { ISuccessResponse } from '@common/interfaces/payload.interface';
 import { success } from '@common/utils';
+import type { JwtRequestPayload } from '@common/types/payload.type';
 
 @ApiBearerAuth('access-token')
 @Controller('branch')
 export class BranchController {
     constructor(private readonly branchService: BranchService) { }
 
-    @Access({ resource: "branch", action: "read" })
+    @Post("/create")
+    @Access({ resource: "branch", action: "create" })
     async create_branch(@Body() reqData: CreateBranchDto): Promise<ISuccessResponse<IBranch>> {
         const result = await this.branchService.create(reqData);
         return success("New branch created successfully", result);
@@ -35,8 +37,8 @@ export class BranchController {
 
     @Patch("/:branchId/update")
     @Access({ resource: "branch", action: "update" })
-    async update_branch(@Param("branchId") branchId: string, @Body() reqData: UpadateBranchDto): Promise<ISuccessResponse<IBranch>> {
-        const result = await this.branchService.update({_id: branchId}, reqData);
+    async update_branch(@Request() user:JwtRequestPayload, @Param("branchId") branchId: string, @Body() reqData: UpadateBranchDto): Promise<ISuccessResponse<IBranch>> {
+        const result = await this.branchService.update({ _id: branchId }, reqData, user);
         return success("Branch updated successfully", result);
     }
 

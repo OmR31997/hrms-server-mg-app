@@ -14,7 +14,7 @@ export class SalaryAdvanceService {
         private salaryAdvanceModel: Model<SalaryAdvanceDocument>
     ) { }
 
-    async create(reqData: CreateSalaryAdvanceDto, approved_by:string): Promise<ISalaryAdvance> {
+    async create(reqData: CreateSalaryAdvanceDto, approved_by: string): Promise<ISalaryAdvance> {
         const created = await this.salaryAdvanceModel.create({
             ...reqData,
             approved_by: new Types.ObjectId(approved_by)
@@ -24,14 +24,15 @@ export class SalaryAdvanceService {
 
     async readAll(): Promise<ISalaryAdvance[]> {
         const result = await this.salaryAdvanceModel.find()
-        .lean();
+            .populate({ path: "approved_by"})
+            .lean();
 
         return result;
     }
 
     async readOne(keyVal: KeyValDto): Promise<ISalaryAdvance> {
         const result = await this.salaryAdvanceModel.findOne(keyVal)
-        .lean();
+            .lean();
 
         if (!result) {
             throw new NotFoundException(`Account not found for ID: '${keyVal._id}'`)
@@ -40,14 +41,14 @@ export class SalaryAdvanceService {
         return result;
     }
 
-    async update(keyVal:KeyValDto, reqData: UpdateSalaryAdvanceDto, approved_by:string): Promise<ISalaryAdvance> {
+    async update(keyVal: KeyValDto, reqData: UpdateSalaryAdvanceDto, approved_by: string): Promise<ISalaryAdvance> {
         const updated = await this.salaryAdvanceModel.findOneAndUpdate(
-            keyVal, 
+            keyVal,
             {
                 ...reqData,
                 approved_by: new Types.ObjectId(approved_by)
             },
-            {new: true, runValidators: true}
+            { new: true, runValidators: true }
         );
 
         if (!updated) {
@@ -57,7 +58,7 @@ export class SalaryAdvanceService {
         return updated;
     }
 
-    async delete(keyVal:KeyValDto): Promise<ISalaryAdvance> {
+    async delete(keyVal: KeyValDto): Promise<ISalaryAdvance> {
         const deleted = await this.salaryAdvanceModel.findOneAndDelete(keyVal);
 
         if (!deleted) {

@@ -23,6 +23,5 @@ export class LoginDto {
     example: '6-Digit OTP code'
   })
   @IsOptional()
-  @IsNumber()
-  otp?: number;
+  otp?: string;
 }

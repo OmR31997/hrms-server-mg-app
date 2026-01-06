@@ -1,5 +1,6 @@
+import objectIdPlugin from "@common/utils/objectId.plugin";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types } from "mongoose";
+import { Document, SaveOptions, Types } from "mongoose";
 
 export type UserDocument = User & Document;
 
@@ -31,7 +32,23 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
+UserSchema.pre<UserDocument>("findOneAndUpdate", async function () {
+    if (this.employee_id) {
+        this.employee_id = new Types.ObjectId(this.employee_id);
+    }
+
+    if (this.company_id) {
+        this.company_id = new Types.ObjectId(this.company_id);
+    }
+
+    if (this.role_id) {
+        this.role_id = new Types.ObjectId(this.role_id);
+    }
+});
+
+UserSchema.plugin(objectIdPlugin);
+
 UserSchema.index(
     { employee_id: 1 },
-    { unique: true, partialFilterExpression: { employee_id: { $type: "objectId" }}}
+    { unique: true, partialFilterExpression: { employee_id: { $type: "objectId" } } }
 )

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpadateUserDto } from '../dto/update-user.dto';
@@ -12,7 +12,13 @@ export class UserService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { };
 
     async create(reqData: CreateUserDto): Promise<IUser> {
-        const created = await this.userModel.create(reqData);
+        const created = await this.userModel.create({
+            ...reqData,
+            company_id: new Types.ObjectId(reqData.company_id),
+            employee_id: new Types.ObjectId(reqData.employee_id),
+            role_id:  new Types.ObjectId(reqData.employee_id)
+
+        });
         return created;
     }
 

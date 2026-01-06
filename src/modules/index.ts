@@ -18,8 +18,6 @@ export * from "./visa-quota-log/visa-quota-log.module";
 export * from "./document/document.module";
 export * from "./doc-log/doc-log.module";
 
-export * from "./otp/otp.module";
-
 export * from "./company/company.module";
 export * from "./branch/branch.module";
 export * from "./branch-transfer/branch-transfer.module"

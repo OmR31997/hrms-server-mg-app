@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { AdminDocument } from "@module/admin/admin.schema";
 import { RoleDocument } from "@module/role/role.schema";
 import * as bcrypt from "bcrypt";
@@ -8,59 +8,59 @@ export class AdminSeeder {
     private readonly ADMIN_ROLE = "admin";
 
     constructor(
+        private readonly roleModel: Model<RoleDocument>,
         private readonly adminModel: Model<AdminDocument>,
-        private readonly roleModel: Model<RoleDocument>
-    ) { }
+    ) {}
 
     private async hashPassword(password: string): Promise<string> {
-        return bcrypt.hash(password, this.SALT)
+        return bcrypt.hash(password, this.SALT);
     }
 
-    private async getOrCreateAdminRole(): Promise<RoleDocument>{
-        let role = await this.roleModel.findOne({ name: "admin" });
-
-        if (!role) {
-            role = await this.roleModel.create({
+    // Seeding role for admin without validators
+    private async getOrCreateAdminRole(): Promise<RoleDocument> {
+        try {
+            await this.roleModel.collection.insertOne({
                 name: this.ADMIN_ROLE,
-                description: 'System Administrator',
-                is_system: true
+                description: "System Administrator",
+                is_system: true,
             });
 
-            console.log('--Admin role created--');
+            console.log("--Admin role created--");
+        } catch (err: any) {
+            // Ignore duplicate key error
+            if (err.code !== 11000) throw err;
         }
 
-        return role;
+        return (await this.roleModel.findOne({
+            name: this.ADMIN_ROLE,
+        })) as RoleDocument;
     }
-    
+
+    // Admin seeding
     async run(): Promise<void> {
         const adminData = {
             name: process.env.ADMIN_NAME ?? "Admin",
             email: process.env.ADMIN_MAIL ?? "admin@support.com",
-        }
+        };
 
-        const PASSWORD = process.env.ADMIN_PASSWORD ?? "admin";
-
-        // Step 1: Is exist email
-        const adminExist = await this.adminModel.findOne({ email: adminData.email })
-
-        if (adminExist) {
-            console.log("--Admin already exists--");
-            return;
-        }
-
-        // Step 2: Ensure role exists
+        const password = process.env.ADMIN_PASSWORD ?? "admin";
+        const hashedPassword = await this.hashPassword(password);
         const role = await this.getOrCreateAdminRole();
 
-        // Step 3: Hashed passwrod
-        const hashedPassword = await this.hashPassword(PASSWORD);
+        try {
+            await this.adminModel.collection.insertOne({
+                ...adminData,
+                password: hashedPassword,
+                role_id: new Types.ObjectId(role._id),
+            });
 
-        // Step 4: Create admin
-        await this.adminModel.create({
-            ...adminData,
-            password: hashedPassword,
-            role_id: role._id
-        });
-
-        console.log('--Admin created successfully--');
+            console.log("--Admin created successfully--");
+        } catch (err: any) {
+            if (err.code === 11000) {
+                console.log("--Admin already exists--");
+                return;
+            }
+            throw err;
+        }
     }
 }

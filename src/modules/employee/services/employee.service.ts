@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Employee, EmployeeDocument } from '../employee.schema';
-import { Connection, Model } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { KeyValDto } from '../dto/key-val.dto';
 import { CreateEmployeeDto } from '../dto/create-employee.dto';
 import { UpdateEmpoyeeDto } from '../dto/update-employee.dto';
 import { IEmployee } from '../interfaces/employee.interface';
 import { EmployeeHistoryService } from '@module/employee-history/services/employee-history.service';
 import { withTransaction } from '@common/utils';
+import { JwtRequestPayload } from '@common/types/payload.type';
 
 @Injectable()
 export class EmployeeService {
@@ -22,7 +23,11 @@ export class EmployeeService {
     ) { }
 
     async create(reqData: CreateEmployeeDto): Promise<IEmployee> {
-        const created = await this.employeeModel.create(reqData);
+        const created = await this.employeeModel.create({
+            ...reqData,
+            company_id: new Types.ObjectId(reqData.company_id),
+            branch_id: new Types.ObjectId(reqData.branch_id)
+        });
         return created;
     }
 
@@ -42,8 +47,7 @@ export class EmployeeService {
         return employee;
     }
 
-    async update(keyVal: KeyValDto, reqData: UpdateEmpoyeeDto, role: string): Promise<IEmployee> {
-
+    async update(keyVal: KeyValDto, reqData: UpdateEmpoyeeDto, user: JwtRequestPayload): Promise<IEmployee> {
         return withTransaction(this.connection, async (session) => {
             const employee = await this.employeeModel.findOne(keyVal).session(session);
 
@@ -57,11 +61,11 @@ export class EmployeeService {
                 if (oldValue !== newValue) {
                     await this.historyService.create(
                         {
-                            employee_id: employee._id.toString(),
+                            employee_id: employee._id,
                             field_name: field,
                             old_value: oldValue,
                             new_value: newValue,
-                            changed_by: role
+                            changed_by: new Types.ObjectId(user.role_id)
                         },
                         session
                     );

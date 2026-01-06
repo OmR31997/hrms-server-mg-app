@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { jwtConfigFactory } from "@config/jwt.config";
 import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
-import { OtpModule } from '../otp/otp.module';
 import { JwtModule } from '@nestjs/jwt';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from '@common/strategies/jwt.strategy';
@@ -12,6 +11,7 @@ import { AdminModule } from '../admin/admin.module';
 import { UserModule } from '../user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { RefreshToken, RefreshTokenSchema } from "@common/schemas/refresh-tokens.schema";
+import { OtpModule } from '@common/otp/otp.module';
 
 @Module({
   imports: [

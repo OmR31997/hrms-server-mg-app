@@ -5,8 +5,10 @@ import {
   AssignPermission, AssignPermissionSchema,
   Permission, PermissionSchema,
   Role, RoleSchema
-} from "../modules"
+} from "../modules";
 import { JwtAuthGuard } from "./guards";
+import { UploadModule } from './upload/upload.module';
+import { OtpModule } from './otp/otp.module';
 
 @Global()
 @Module({
@@ -16,12 +18,14 @@ import { JwtAuthGuard } from "./guards";
       { name: Permission.name, schema: PermissionSchema },
       { name: AssignPermission.name, schema: AssignPermissionSchema },
     ]),
+    UploadModule,
+    OtpModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard
-    }
-  ],
+    },
+  ]
 })
 export class CommonModule { }

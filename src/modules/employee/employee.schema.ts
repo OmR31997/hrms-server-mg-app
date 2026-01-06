@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
+import { Status } from "./dto/create-employee.dto";
+import objectIdPlugin from "@common/utils/objectId.plugin";
 
 export type EmployeeDocument = Employee & Document;
 
@@ -30,8 +32,10 @@ export class Employee {
     @Prop({ type: Date, default: () => new Date() })
     joining_date: Date;
 
-    @Prop({ default: "pending", enum: ["approved", "pending", "rejected", "resigned", "terminated"] })
-    employment_status: string;
+    @Prop({ default: Status.PENDING, enum: Object.values(Status) })
+    employment_status: Status;
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);
+
+EmployeeSchema.plugin(objectIdPlugin);
