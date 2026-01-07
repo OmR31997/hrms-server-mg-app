@@ -21,10 +21,10 @@ export const setupSwagger = (app: INestApplication) => {
     const document = SwaggerModule.createDocument(app, config, { deepScanRoutes: true });
 
     document.servers = ENV.IS_PROD
-        ? [{ url: `${process.env.PROD_URL}/api`, description: "PROD" }]
+        ? [{ url: `${process.env.PROD_URL}`, description: "PROD" }]
         : [
-            { url: `${process.env.LOCAL_URL}/api`, description: "LOCAL" },
-            { url: `${process.env.DEV_URL}/api`, description: "DEV" },
+            { url: `${process.env.LOCAL_URL}`, description: "LOCAL" },
+            { url: `${process.env.DEV_URL}`, description: "DEV" },
         ];
 
     SwaggerModule.setup('swagger-ui', app, document, {
