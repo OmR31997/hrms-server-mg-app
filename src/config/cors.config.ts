@@ -1,20 +1,24 @@
 import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
 
 const origin = (
-    requestOrigin:string | undefined, 
-    callback: (err: Error | null, allow?: boolean) => void) => {
+    requestOrigin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+) => {
     const allowed = [
-        process.env.PROD_CLIENT,
+        process.env.DEV_URL,
+        process.env.PROD_URL,
         process.env.DEV_CLIENT,
-        `http://localhost:${process.env.PORT}`,
+        process.env.PROD_CLIENT
     ].filter(Boolean);
 
-    if (!requestOrigin || allowed.includes(requestOrigin)) {
+    // Check if requestOrigin starts with any allowed URL
+    if (!requestOrigin || allowed.some(url => requestOrigin.startsWith(url!))) {
         callback(null, true);
     } else {
+        console.warn("Blocked CORS request from:", requestOrigin);
         callback(new Error("Not allowed by CORS"));
     }
-}
+};
 
 export const corsConfig: CorsOptions = {
     origin,

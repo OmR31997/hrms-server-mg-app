@@ -1,12 +1,8 @@
 import { INestApplication } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { ENV } from "./env.config";
 
 export const setupSwagger = (app: INestApplication) => {
-    const IS_PROD = process.env.NODE_ENV === "production";
-
-    const serverUrl = IS_PROD   
-    ? "https://hrms-server-mg-app.onrender.com" : `http://156.67.111.38:${process.env.PORT}`;
-
     const config = new DocumentBuilder()
         .setTitle("HRMS-Server API")
         .setDescription("Automatically generated Swagger documentation")
@@ -20,14 +16,22 @@ export const setupSwagger = (app: INestApplication) => {
             },
             "access-token"
         )
-        .addServer(`${serverUrl}`, IS_PROD ? "Production Server": "Local Server")
         .build();
 
-    const document = SwaggerModule.createDocument(app, config, {deepScanRoutes: true});
+    const document = SwaggerModule.createDocument(app, config, { deepScanRoutes: true });
+
+    document.servers = ENV.IS_PROD
+        ? [{ url: `${process.env.PROD_URL}/api`, description: "PROD" }]
+        : [
+            { url: `${process.env.LOCAL_URL}/api`, description: "LOCAL" },
+            { url: `${process.env.DEV_URL}/api`, description: "DEV" },
+        ];
 
     SwaggerModule.setup('swagger-ui', app, document, {
         swaggerOptions: {
-            persistAuthorization: true
+            persistAuthorization: true,
+            tryItOutEnabled: true,
+            defaultModelExpandDepth: -1
         }
-    })
+    }) as any
 } 

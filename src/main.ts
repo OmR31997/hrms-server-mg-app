@@ -5,10 +5,15 @@ import { AllExceptionsFilter } from '@common/filters/all-exceptions.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { corsConfig } from '@config/cors.config';
 import { setupSwagger } from '@config/swagger.config';
-import cookieParser from 'cookie-parser'; 
+import cookieParser from 'cookie-parser';
+import { ENV } from '@config/env.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const server = app.getHttpAdapter().getInstance();
+  server.set("trust proxy", true);
+
   app.enableCors(corsConfig);
   app.setGlobalPrefix('api');
 
@@ -40,14 +45,19 @@ async function bootstrap() {
     whitelist: true,
     skipMissingProperties: false
   }))
-  
+
   app.use(cookieParser());
   app.useGlobalFilters(new AllExceptionsFilter());
- 
-  await app.listen(process.env.PORT || 3000);
 
-  console.log(`Server running on port- ${process.env.BASE_URL}/api`);
-  console.log(`Swagger - ${process.env.BASE_URL}/swagger-ui`);
+  await app.listen(process.env.PORT!, "0.0.0.0");
+
+  if (ENV.IS_PROD) {
+    console.log(`Server running on port- ${process.env.PROD_URL}/api`);
+    console.log(`Swagger - ${process.env.PROD_URL}/swagger-ui`);
+  } else {
+    console.log(`Server running on port- ${process.env.LOCAL_URL}/api`);
+    console.log(`Swagger - ${process.env.LOCAL_URL}/swagger-ui`);
+  }
 }
 
 bootstrap();
