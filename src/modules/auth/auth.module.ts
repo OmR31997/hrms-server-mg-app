@@ -28,7 +28,11 @@ import { OtpModule } from '@common/otp/otp.module';
     UserModule,
     OtpModule,
   ],
-  providers: [AuthService, GoogleStrategy, JwtStrategy],
+  providers: [
+    AuthService, 
+    GoogleStrategy, 
+    JwtStrategy,
+  ],
   controllers: [AuthController],
   exports: [
     PassportModule, JwtModule

@@ -4,13 +4,14 @@ import * as bcrypt from "bcrypt";
 import { LoginDto } from '../dto/login.dto';
 import { AdminService } from '@module/admin/services/admin.service';
 import { UserService } from '@module/user/services/user.service';
-import { IToken, IValidatedUser } from '../interfaces/auth.interface';
+import { IValidatedUser } from '../interfaces/auth.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { RefreshToken, RefreshTokenDocument } from '@common/schemas/refresh-tokens.schema';
 import { addDays, cryptoHash, generateRefreshToken } from '@common/utils/crypto.util';
 import { JwtRequestPayload } from '@common/types/payload.type';
 import { OtpService } from '@common/otp/otp.service';
+import { IToken } from '@common/interceptors/login.interceptor';
 
 @Injectable()
 export class AuthService {

@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 
-export type AdminDocument = Admin & Document;
+export type SalaryHistoryDocument = SalaryHistory & Document;
 
-@Schema({ timestamps: true })
-export class Admin {
+@Schema({ timestamps: {createdAt: "changed_at"} })
+export class SalaryHistory {
     @Prop({ required: [true, `'salary_id' must be required`] })
     salary_id: Types.ObjectId;
 
@@ -12,7 +12,7 @@ export class Admin {
     field_name: string;
 
     @Prop({ required: [true, `'old_value' must be required`], select: false })
-    old_value: string;
+    old_value: number;
 
     @Prop({ required: [true, `'new_value' must be required`] })
     new_value: number;
@@ -21,4 +21,4 @@ export class Admin {
     changed_by: Types.ObjectId;
 }
 
-export const AdminSchema = SchemaFactory.createForClass(Admin)
+export const SalaryHistorySchema = SchemaFactory.createForClass(SalaryHistory)

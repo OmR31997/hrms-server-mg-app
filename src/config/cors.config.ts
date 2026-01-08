@@ -5,6 +5,7 @@ const origin = (
     callback: (err: Error | null, allow?: boolean) => void
 ) => {
     const allowed = [
+        process.env.LOCAL_URL,
         process.env.DEV_URL,
         process.env.PROD_URL,
         process.env.DEV_CLIENT,

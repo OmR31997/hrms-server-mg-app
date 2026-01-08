@@ -7,8 +7,8 @@ export enum Status {
     REJECTED = "rejected",
     TERMINATED = "terminated",
     RESIGNED = "resigned"
-
 }
+
 export class CreateEmployeeDto {
 
     @ApiProperty({

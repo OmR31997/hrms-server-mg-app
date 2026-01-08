@@ -1,12 +1,11 @@
-import { Body, Controller, Get, Param, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res, UnauthorizedException, UseInterceptors } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../dto/login.dto';
 import { Public } from '@common/decorators';
 import type { Request, Response } from 'express';
-import type { JwtRequestPayload } from "@common/types/payload.type"
-import { ISuccessResponse } from '@common/interfaces/payload.interface';
-import { success } from '@common/utils';
-import { IToken } from '../interfaces/auth.interface';
+import type { JwtRequestPayload } from "@common/types/payload.type";
+import { IToken, LoginInterceptor } from '@common/interceptors/login.interceptor';
+import { SuccessInterceptor } from '@common/interceptors/success.interceptor';
 
 @Controller('auth')
 export class AuthController {
@@ -17,6 +16,7 @@ export class AuthController {
 
     @Post("/login")
     @Public()
+    @UseInterceptors(LoginInterceptor)
     async login(
         @Body() reqData: LoginDto,
         @Res({ passthrough: true }) res: Response
@@ -36,14 +36,15 @@ export class AuthController {
 
     @Post("/:email/otp")
     @Public()
-    async sendOtp(@Param("email") email: string):Promise<ISuccessResponse> {
+    @UseInterceptors(SuccessInterceptor)
+    async sendOtp(@Param("email") email: string): Promise<{ message: string }> {
         const otp = await this.authService.sendOtp(email);
         console.log(`OTP: ${otp}`);
-        return success("OTP sent successfully")
+        return { message: "OTP sent successfully" }
     }
 
     @Get("/refresh")
-    async get_access_token(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    async get_access_token(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<IToken> {
         const refreshToken = req.cookies["refreshToken"];
 
         if (!refreshToken) throw new UnauthorizedException('No refresh token');
@@ -54,7 +55,7 @@ export class AuthController {
     }
 
     @Post("/logout")
-    async logout(@Req() req: Request, @Res() res: Response): Promise<ISuccessResponse> {
+    async logout(@Req() req: Request, @Res() res: Response): Promise<{ message: string }> {
         const refreshToken = req.cookies["refreshToken"];
         if (!refreshToken) {
             throw new UnauthorizedException('No refresh token');
@@ -63,16 +64,16 @@ export class AuthController {
         await this.authService.logout(refreshToken);
         res.clearCookie("refreshToken", { path: "/auth/refresh" });
 
-        return success("Logout successfully done");
+        return { message: "Logout successfully done" }
     }
 
     @Post("/logout-all")
-    async logout_all(@Req() user: JwtRequestPayload, @Res() res: Response): Promise<ISuccessResponse> {
+    async logout_all(@Req() user: JwtRequestPayload, @Res() res: Response): Promise<{ message: string }> {
         const { sub: owner_id, ref_by } = user;
         await this.authService.logoutAllFromAllDevices(owner_id, ref_by)
         res.clearCookie("refreshToken", { path: "/auth/refresh" });
 
-        return success("Logout successfully done");
+        return { message: "Logout successfully done" };
     }
 
 }

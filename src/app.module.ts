@@ -32,10 +32,12 @@ import { SalaryHistoryModule } from './modules/salary-history/salary-history.mod
 import { SalaryLockModule } from './modules/salary-lock/salary-lock.module';
 import { SalaryPaymentModule } from './modules/salary-payment/salary-payment.module';
 import { NotificationModule } from './modules/notification/notification.module';
-import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { SystemJobModule } from './modules/system-job/system-job.module';
 import { AdvanceDeductionModule } from "@module/advance-deduction/advance-deduction.module";
 import { AdvanceHistoryModule } from "@module/advance-history/advance-history.module";
+import { AuditLogModule } from './modules/audit-log/audit-log.module';
+import { LeaveModule } from './modules/leave/leave.module';
+import { LeaveHistoryModule } from './modules/leave-history/leave-history.module';
 
 @Module({
   imports: [
@@ -92,9 +94,13 @@ import { AdvanceHistoryModule } from "@module/advance-history/advance-history.mo
 
     NotificationModule,
 
+    SystemJobModule,
+
     AuditLogModule,
 
-    SystemJobModule,
+    LeaveModule,
+
+    LeaveHistoryModule,
 
   ],
   controllers: [AppController],

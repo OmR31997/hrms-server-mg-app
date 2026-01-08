@@ -1,3 +1,4 @@
+import objectIdPlugin from "@common/utils/objectId.plugin";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 
@@ -19,3 +20,5 @@ export class SalaryLot {
 }
 
 export const SalaryLotSchema = SchemaFactory.createForClass(SalaryLot)
+
+SalaryLotSchema.plugin(objectIdPlugin);

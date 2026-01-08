@@ -55,8 +55,8 @@ async function bootstrap() {
     console.log(`Server running on port- ${process.env.PROD_URL}/api`);
     console.log(`Swagger - ${process.env.PROD_URL}/swagger-ui`);
   } else {
-    console.log(`Server running on port- ${process.env.LOCAL_URL}/api`);
-    console.log(`Swagger - ${process.env.LOCAL_URL}/swagger-ui`);
+    console.log(`Server running on port- ${process.env.DEV_URL}/api`);
+    console.log(`Swagger - ${process.env.DEV_URL}/swagger-ui`);
   }
 }
 

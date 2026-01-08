@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Model } from 'mongoose';
 import { KeyValDto } from '../dto/key-val.dto';
 import { IEmpoloyeeHistory } from '../interfaces/employee-history.interface';
-import { CreateEmployeeHistory } from '../controllers/types/create-employee-history.type';
+import { CreateEmployeeHistory } from '../types/create-employee-history.type';
 
 @Injectable()
 export class EmployeeHistoryService {

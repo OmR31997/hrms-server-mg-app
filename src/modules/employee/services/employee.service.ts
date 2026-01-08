@@ -22,7 +22,7 @@ export class EmployeeService {
         private historyService: EmployeeHistoryService,
     ) { }
 
-    async create(reqData: CreateEmployeeDto): Promise<IEmployee> {
+    async create(reqData: CreateEmployeeDto, user:JwtRequestPayload): Promise<IEmployee> {
         const created = await this.employeeModel.create({
             ...reqData,
             company_id: new Types.ObjectId(reqData.company_id),

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsMongoId, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateSalaryLotDto {
@@ -30,7 +30,7 @@ export class CreateSalaryLotDto {
 
     @ApiProperty({
         description: 'User ID who created this lot',
-        example: '64b7f9a2e9b1c8d4a7654321',
+        example: 'ObjectId',
     })
     @IsMongoId()
     @IsNotEmpty()

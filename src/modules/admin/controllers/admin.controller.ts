@@ -1,20 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { AdminService } from '../services/admin.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { IAdmin } from '../interfaces/admin.inteface';
 import { Access } from '@common/decorators';
-import { ISuccessResponse } from '@common/interfaces/payload.interface';
-import { success } from '@common/utils';
+import { ApiResponse, SuccessInterceptor } from '@common/interceptors/success.interceptor';
 
 @ApiBearerAuth('access-token')
 @Controller('admin')
+@UseInterceptors(SuccessInterceptor)
 export class AdminController {
     constructor(private readonly adminService: AdminService) { }
 
     @Access({ resource: "admin", action: "read" })
     @Get("/read")
-    async get_admin(): Promise<ISuccessResponse<IAdmin[]>> {
+    async get_admin(): Promise<ApiResponse> {
         const admin = await this.adminService.readAll();
-        return success("Data fetched successfully", admin);
+        return {data: admin};
     }
 }

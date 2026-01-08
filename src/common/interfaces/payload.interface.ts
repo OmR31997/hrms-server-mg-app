@@ -2,6 +2,7 @@ export interface ISuccessResponse<T = unknown> {
     success: true;
     message: string;
     data: T | null;
+    timestamp: string;
 }
 
 export interface IJwtPayload {

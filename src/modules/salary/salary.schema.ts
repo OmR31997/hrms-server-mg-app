@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 import { PaymentMode, Status } from "./dto/create-salary.dto";
+import objectIdPlugin from "@common/utils/objectId.plugin";
 
 export type SalaryDocument = Salary & Document;
 
@@ -38,3 +39,5 @@ export class Salary {
 }
 
 export const SalarySchema = SchemaFactory.createForClass(Salary)
+
+SalarySchema.plugin(objectIdPlugin);

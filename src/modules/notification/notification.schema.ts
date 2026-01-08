@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
+import { Channel } from "./types/create-notification.type";
 
 export type NotificationDocument = Notification & Document;
 
@@ -11,8 +12,8 @@ export class Notification {
     @Prop({ required: [true, `'type' must be required`] })
     type: string;
 
-    @Prop({ required: [true, `'channel' must be required`] })
-    channel: string;
+    @Prop({ enum: Object.values(Channel), required: [true, `'channel' must be required`] })
+    channel: Channel;
 
     @Prop({ required: [true, `'message' must be required`] })
     message: string;
